@@ -25,8 +25,19 @@ public class Game extends Observable {
             }
         }
 
+        for (int i = 0; i<size; i++){
+            for (int j = 0; j<size; j++){
+                tabCells[i][j].setGame(this);
+            }
+        }
+
 
         rnd();
+    }
+
+    public void updateCell(Cell cell, Point point){
+        tabCells[point.x][point.y] = cell;
+        cells.put(cell, point);
     }
 
     public int getSize() {
@@ -62,10 +73,10 @@ public class Game extends Observable {
 
                         switch (r) {
                             case 0:
-                                tabCells[x][y] = new Cell(2);
+                                updateCell(new Cell(2), new Point(x, y));
                                 break;
                             case 1:
-                                tabCells[x][y] = new Cell(4);
+                                updateCell(new Cell(4), new Point(x, y));
                                 break;
                         }
             }
@@ -77,6 +88,10 @@ public class Game extends Observable {
         notifyObservers();
 
 
+    }
+
+    public HashMap<Cell, Point> getCells(){
+        return this.cells;
     }
 
 }
