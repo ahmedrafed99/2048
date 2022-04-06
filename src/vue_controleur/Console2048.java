@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
+import static java.sql.Types.NULL;
+
 public class Console2048 extends Thread implements Observer {
 
     private Game game;
@@ -25,7 +27,7 @@ public class Console2048 extends Thread implements Observer {
             display();
 
             synchronized (this) {
-                ecouteEvennementClavier();
+                listenKeyboardEvents();
                 try {
                     wait(); // lorsque le processus s'endort, le verrou sur this est relâché, ce qui permet au processus de ecouteEvennementClavier()
                     // d'entrer dans la partie synchronisée, ce verrou évite que le réveil du processus de la console (update(..)) ne soit exécuté avant
@@ -42,7 +44,7 @@ public class Console2048 extends Thread implements Observer {
     /**
      * Correspond à la fonctionnalité de Contrôleur : écoute les évènements, et déclenche des traitements sur le modèle
      */
-    private void ecouteEvennementClavier() {
+    private void listenKeyboardEvents() {
 
         final Object _this = this;
 
@@ -85,10 +87,10 @@ public class Console2048 extends Thread implements Observer {
 
         for (int i = 0; i < game.getSize(); i++) {
             for (int j = 0; j < game.getSize(); j++) {
-                Cell c = game.getCell(i, j);
-                if (c != null) {
-                    System.out.format("%5.5s", c.getValue());
-                } else {
+                Cell cell = game.getCell(i, j);
+                if (cell.getValue() != NULL) {
+                    System.out.format("%5.5s", cell.getValue());
+                } else if (cell.getValue() == 0) {
                     System.out.format("%5.5s", "");
                 }
 

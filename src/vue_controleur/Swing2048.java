@@ -11,6 +11,8 @@ import java.awt.event.KeyEvent;
 import java.util.Observable;
 import java.util.Observer;
 
+import static java.sql.Types.NULL;
+
 public class Swing2048 extends JFrame implements Observer {
     private static final int PIXEL_PER_SQUARE = 60;
     // tableau de cases : i, j -> case graphique
@@ -60,7 +62,7 @@ public class Swing2048 extends JFrame implements Observer {
                     for (int j = 0; j < game.getSize(); j++) {
                         Cell cell = game.getCell(i, j);
 
-                        if (cell == null) {
+                        if (cell.getValue() == NULL) {
 
                             tabC[i][j].setText("");
 
