@@ -42,6 +42,7 @@ public class Game extends Observable {
 
         setCell(cell, new Point(point.x, point.y));
         cell.setGame(this);
+        cell.updateColor();
 
         if (!cells.containsKey(cell) && cell.getValue() != 0) {
             cells.put(getCell(point.x, point.y), point);
@@ -50,7 +51,17 @@ public class Game extends Observable {
         }
     }
 
-
+    public boolean hasNextMove(){
+        for(Cell cell: getCells().keySet()){
+            if    ( cell.getNext(Direction.up).getValue() == cell.getValue() |
+                    cell.getNext(Direction.down).getValue() == cell.getValue() |
+                    cell.getNext(Direction.right).getValue() == cell.getValue() |
+                    cell.getNext(Direction.left).getValue() == cell.getValue() ) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void move(Direction direction){
         boolean hasMoved = false;
@@ -120,6 +131,10 @@ public class Game extends Observable {
                 cell.setMerged(false);
             }
             rnd();
+        }
+
+        if (this.getCells().keySet().size() == getSize()*getSize() && !hasNextMove()){
+            System.out.println("game is over");
         }
 
         setChanged();

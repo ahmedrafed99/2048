@@ -36,6 +36,9 @@ public class Swing2048 extends JFrame implements Observer {
                 tabC[i][j] = new JLabel();
                 tabC[i][j].setBorder(border);
                 tabC[i][j].setHorizontalAlignment(SwingConstants.CENTER);
+                tabC[i][j].setFont(new Font("Serif", Font.BOLD, 20));
+                tabC[i][j].setOpaque(true);
+
 
 
                 contentPane.add(tabC[i][j]);
@@ -66,9 +69,11 @@ public class Swing2048 extends JFrame implements Observer {
                         if (cell.getValue() == NULL) {
 
                             tabC[i][j].setText("");
+                            tabC[i][j].setBackground(new Color(255, 255, 255));
 
                         } else {
                             tabC[i][j].setText(cell.getValue() + "");
+                            tabC[i][j].setBackground(cell.getColor());
                         }
 
 

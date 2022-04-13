@@ -8,6 +8,9 @@ public class Cell {
     private int value;
     private Game game;
     private boolean isMerged;
+    private Color color;
+
+
 
     public Cell(int value) {
         this.game = null;
@@ -21,13 +24,7 @@ public class Cell {
         this.isMerged = false;
     }
 
-    public void setGame(Game game) {
-        this.game = game;
-    }
 
-    public int getValue() {
-        return value;
-    }
 
     public boolean shift(Direction direction){
         switch (direction){
@@ -278,6 +275,68 @@ public class Cell {
         isMerged = merged;
     }
 
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
+    public void updateColor() {
+        switch (value) {
+            case 2:
+                color = new Color(255, 255, 0);
+                break;
+            case 4:
+                color = new Color(255, 170, 0 );
+                break;
+            case 8:
+                color = new Color(255, 100, 0);
+                break;
+            case 16:
+                color = new Color(255, 10, 0);
+                break;
+            case 32:
+                color = new Color(200, 0, 0);
+                break;
+            case 64:
+                color = new Color(100, 0, 0);
+                break;
+            case 128:
+                color = new Color(255, 0, 100);
+                break;
+            case 256:
+                color = new Color(255, 0, 220);
+                break;
+            case 512:
+                color = new Color(255, 0, 255);
+                break;
+            case 1024:
+                color = new Color(150, 0, 255);
+                break;
+            case 2048:
+                color = new Color(77, 51, 146);
+                break;
+            case 4096:
+                color = new Color(50, 50, 100);
+                break;
+            case 8192:
+                color = new Color(100, 100, 100);
+                break;
+            case 16384:
+                color = new Color(160, 160, 160);
+                break;
+        }
+    }
+
+    public int getValue() {
+        return value;
+    }
 
     @Override
     public String toString() {
