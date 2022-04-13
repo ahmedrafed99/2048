@@ -22,7 +22,6 @@ public class Game extends Observable {
             for (int j = 0; j<size; j++){
 
                 tabCells[i][j] = new Cell();
-                this.cells.put(tabCells[i][j], new Point(j, i));
             }
         }
 
@@ -33,33 +32,38 @@ public class Game extends Observable {
         }
 
 
-        //rnd();
+        rnd();
     }
 
-    public void updateCell(int value, Point point){
+    public void updateCell(Cell cell, Point point){
         if (point.x >= getSize() | point.y >= getSize() | point.x < 0 | point.y < 0 ) {
             throw new IllegalArgumentException("Point must have coordinates inside the game board");
         }
-        getCell(point.x, point.y).setValue(value);
-        cells.put(getCell(point.x, point.y), point);
+
+        setCell(cell, new Point(point.x, point.y));
+        cell.setGame(this);
+
+        if (!cells.containsKey(cell) && cell.getValue() != 0) {
+            cells.put(getCell(point.x, point.y), point);
+        } else {
+            cells.replace(cell, cell.getCoord(), point);
+        }
     }
 
-    public int getSize() {
-        return tabCells.length;
-    }
 
-    public Cell getCell(int i, int j) {
-        return tabCells[i][j];
-    }
 
     public void move(Direction direction){
+        boolean hasMoved = false;
+
         switch (direction) {
             case up:
                 for (int y = 0; y<getSize(); y++){
-                    for (int x = 0; x<getSize(); x++){
+                    for (int x = 1; x<getSize(); x++){
                         Cell cell = getCell(x, y);
                         if(cell.getValue() != NULL) {
-                            cell.shift(Direction.up);
+                            if (cell.shift(Direction.up)){
+                                hasMoved = true;
+                            }
                         }
 
                     }
@@ -69,10 +73,12 @@ public class Game extends Observable {
 
             case down:
                 for (int y = 0; y<getSize(); y++){
-                    for (int x = getSize()-1; x>=0; x--){
+                    for (int x = getSize()-2; x>=0; x--){
                         Cell cell = getCell(x, y);
                         if(cell.getValue() != NULL) {
-                            cell.shift(Direction.down);
+                            if (cell.shift(Direction.down)){
+                                hasMoved = true;
+                            }
                         }
                     }
                 }
@@ -81,10 +87,12 @@ public class Game extends Observable {
 
             case right:
                 for (int x = 0; x<getSize(); x++){
-                    for (int y = getSize()-1; y>= 0; y--){
+                    for (int y = getSize()-2; y>= 0; y--){
                         Cell cell = getCell(x, y);
                         if (cell.getValue() != NULL) {
-                            cell.shift(Direction.right);
+                            if (cell.shift(Direction.right)){
+                                hasMoved = true;
+                            }
                         }
 
                     }
@@ -94,52 +102,63 @@ public class Game extends Observable {
 
             case left:
                 for (int x = 0; x<getSize(); x++){
-                    for (int y = 0; y<getSize(); y++){
+                    for (int y = 1; y<getSize(); y++){
                         Cell cell = getCell(x, y);
                         if (cell.getValue() != NULL) {
-                            cell.shift(Direction.left);
+                            if (cell.shift(Direction.left)){
+                                hasMoved = true;
+                            }
                         }
                     }
                 }
 
                 break;
         }
+
+        if (hasMoved == true) {
+            for (Cell cell: getCells().keySet()){
+                cell.setMerged(false);
+            }
+            rnd();
+        }
+
+        setChanged();
+        notifyObservers();
     }
 
 
-
     public void rnd() {
-        new Thread() { // permet de libérer le processus graphique ou de la console
-            public void run() {
-                int r, x, y;
+
+        int r, x, y;
+
+        x = rnd.nextInt(getSize());
+        y = rnd.nextInt(getSize());
+        while(tabCells[x][y].getValue() != NULL) {
+            x = rnd.nextInt(getSize());
+            y = rnd.nextInt(getSize());
+        }
+        r = rnd.nextInt(2);
 
 
-                x = rnd.nextInt(4);
-                y = rnd.nextInt(4);
-                while(tabCells[x][y].getValue() != NULL) {
-                    x = rnd.nextInt(4);
-                    y = rnd.nextInt(4);
-                }
-                r = rnd.nextInt(2);
+        switch (r) {
+            case 0:
+                updateCell(new Cell(2), new Point(x, y));
+                break;
+            case 1:
+                updateCell(new Cell(4), new Point(x, y));
+                break;
+        }
 
-
-                        switch (r) {
-                            case 0:
-                                updateCell(2, new Point(x, y));
-                                break;
-                            case 1:
-                                updateCell(4, new Point(x, y));
-                                break;
-                        }
-            }
-
-        }.start();
 
 
         setChanged();
         notifyObservers();
 
 
+    }
+
+    public void setCell(Cell cell, Point point){
+        tabCells[point.x][point.y] = cell;
     }
 
     public String toString() {
@@ -160,9 +179,13 @@ public class Game extends Observable {
     public HashMap<Cell, Point> getCells(){
         return this.cells;
     }
-
-    public Cell[][] getTabCells(){
-        return tabCells;
+    public int getSize() {
+        return tabCells.length;
     }
+
+    public Cell getCell(int i, int j) {
+        return tabCells[i][j];
+    }
+
 
 }

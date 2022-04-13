@@ -7,15 +7,18 @@ import static java.sql.Types.NULL;
 public class Cell {
     private int value;
     private Game game;
+    private boolean isMerged;
 
     public Cell(int value) {
         this.game = null;
         this.value = value;
+        this.isMerged = false;
     }
 
     public Cell(){
         this.value = NULL;
         this.game = null;
+        this.isMerged = false;
     }
 
     public void setGame(Game game) {
@@ -26,23 +29,35 @@ public class Cell {
         return value;
     }
 
-    public void shift(Direction direction){
+    public boolean shift(Direction direction){
         switch (direction){
             case up :
                 if(getCoord().x != 0) {
                     Cell cellUp = this.getNext(Direction.up);
-                    if (cellUp != null && cellUp.getValue() != this.getValue()) {
-                        game.updateCell(this.getValue(), new Point(cellUp.getCoord().x+1, cellUp.getCoord().y));
-                        this.emptyCell();
+                    if (cellUp != null && cellUp.getValue() != this.getValue() && getDistance(cellUp, Direction.up) > 1) {
+                        Point oldPoint = this.getCoord();
+                        game.updateCell(this, new Point(cellUp.getCoord().x+1, cellUp.getCoord().y));
+                        game.updateCell(new Cell(), oldPoint);
+                        return true;
                     }
 
-                    if(cellUp != null && cellUp.getValue() == this.getValue()){
-                        this.merge(cellUp);
+                    if(cellUp != null && cellUp.getValue() == this.getValue() ){
+                        if (!cellUp.isMerged()) {
+                            this.merge(cellUp);
+                        }
+                        else {
+                            Point oldPoint = this.getCoord();
+                            game.updateCell(this, new Point(cellUp.getCoord().x, cellUp.getCoord().y - 1));
+                            game.updateCell(new Cell(), oldPoint);
+                        }
+                        return true;
                     }
 
                     if(cellUp == null){
-                        game.updateCell(this.getValue(), new Point(0, getCoord().y));
-                        this.emptyCell();
+                        Point oldPoint = this.getCoord();
+                        game.updateCell(this, new Point(0, getCoord().y));
+                        game.updateCell(new Cell(), oldPoint);
+                        return true;
                     }
 
                 }
@@ -52,18 +67,30 @@ public class Cell {
             case down :
                 if(getCoord().x != this.game.getSize()-1) {
                     Cell cellDown = this.getNext(Direction.down);
-                    if (cellDown != null && cellDown.getValue() != this.getValue()) {
-                        game.updateCell(this.getValue(), new Point(cellDown.getCoord().x-1, cellDown.getCoord().y));
-                        this.emptyCell();
+                    if (cellDown != null && cellDown.getValue() != this.getValue() && getDistance(cellDown, Direction.down) > 1) {
+                        Point oldPoint = this.getCoord();
+                        game.updateCell(this, new Point(cellDown.getCoord().x-1, cellDown.getCoord().y));
+                        game.updateCell(new Cell(), oldPoint);
+                        return true;
                     }
 
-                    if(cellDown != null && cellDown.getValue() == this.getValue()){
-                        this.merge(cellDown);
+                    if(cellDown != null && cellDown.getValue() == this.getValue() ){
+                        if (!cellDown.isMerged()) {
+                            this.merge(cellDown);
+                        }
+                        else {
+                            Point oldPoint = this.getCoord();
+                            game.updateCell(this, new Point(cellDown.getCoord().x, cellDown.getCoord().y - 1));
+                            game.updateCell(new Cell(), oldPoint);
+                        }
+                        return true;
                     }
 
                     if(cellDown == null){
-                        game.updateCell(this.getValue(), new Point(game.getSize()-1, getCoord().y));
-                        this.emptyCell();
+                        Point oldPoint = this.getCoord();
+                        game.updateCell(this, new Point(game.getSize()-1, getCoord().y));
+                        game.updateCell(new Cell(), oldPoint);
+                        return true;
                     }
                 }
 
@@ -72,18 +99,30 @@ public class Cell {
             case right :
                 if(getCoord().y != this.game.getSize()) {
                     Cell cellRight = this.getNext(Direction.right);
-                    if (cellRight != null && cellRight.getValue() != this.getValue()) {
-                        game.updateCell(this.getValue(), new Point(cellRight.getCoord().x, cellRight.getCoord().y-1));
-                        this.emptyCell();
+                    if (cellRight != null && cellRight.getValue() != this.getValue() && getDistance(cellRight, Direction.right) > 1) {
+                        Point oldPoint = this.getCoord();
+                        game.updateCell(this, new Point(cellRight.getCoord().x, cellRight.getCoord().y-1));
+                        game.updateCell(new Cell(), oldPoint);
+                        return true;
                     }
 
-                    if(cellRight != null && cellRight.getValue() == this.getValue()){
-                        this.merge(cellRight);
+                    if(cellRight != null && cellRight.getValue() == this.getValue() ){
+                        if (!cellRight.isMerged()) {
+                            this.merge(cellRight);
+                        }
+                        else {
+                            Point oldPoint = this.getCoord();
+                            game.updateCell(this, new Point(cellRight.getCoord().x, cellRight.getCoord().y - 1));
+                            game.updateCell(new Cell(), oldPoint);
+                        }
+                        return true;
                     }
 
                     if(cellRight == null){
-                        game.updateCell(this.getValue(), new Point(getCoord().x, game.getSize()-1));
-                        this.emptyCell();
+                        Point oldPoint = this.getCoord();
+                        game.updateCell(this, new Point(getCoord().x, game.getSize()-1));
+                        game.updateCell(new Cell(), oldPoint);
+                        return true;
                     }
                 }
 
@@ -92,29 +131,64 @@ public class Cell {
             case left :
                 if(getCoord().y != 0) {
                     Cell cellLeft = this.getNext(Direction.left);
-                    if (cellLeft != null && cellLeft.getValue() != this.getValue()) {
-                        game.updateCell(this.getValue(), new Point(cellLeft.getCoord().x, cellLeft.getCoord().y+1));
-                        this.emptyCell();
+                    if (cellLeft != null && cellLeft.getValue() != this.getValue() && getDistance(cellLeft, Direction.left) > 1) {
+                        Point oldPoint = this.getCoord();
+                        game.updateCell(this, new Point(cellLeft.getCoord().x, cellLeft.getCoord().y+1));
+                        game.updateCell(new Cell(), oldPoint);
+                        return true;
                     }
 
-                    if(cellLeft != null && cellLeft.getValue() == this.getValue()){
-                        this.merge(cellLeft);
+                    if(cellLeft != null && cellLeft.getValue() == this.getValue() ){
+                        if (!cellLeft.isMerged()) {
+                            this.merge(cellLeft);
+                        }
+                        else {
+                            Point oldPoint = this.getCoord();
+                            game.updateCell(this, new Point(cellLeft.getCoord().x, cellLeft.getCoord().y - 1));
+                            game.updateCell(new Cell(), oldPoint);
+                        }
+                        return true;
                     }
 
                     if(cellLeft == null){
-                        game.updateCell(this.getValue(), new Point(getCoord().x, 0));
-                        this.emptyCell();
+                        Point oldPoint = this.getCoord();
+                        game.updateCell(this, new Point(getCoord().x, 0));
+                        game.updateCell(new Cell(), oldPoint);
+                        return true;
                     }
                 }
 
                 break;
         }
+        return false;
     }
 
     public void merge(Cell cell){
-        game.updateCell(cell.getValue() * 2, new Point(cell.getCoord().x, cell.getCoord().y));
-        game.updateCell(NULL, new Point(this.getCoord().x, this.getCoord().y));
+        Cell mergedCell = new Cell(cell.getValue()*2);
+        Point cellPoint = new Point(cell.getCoord().x, cell.getCoord().y);
 
+        this.deleteCell();
+        cell.deleteCell();
+        game.updateCell(mergedCell, cellPoint);
+
+        mergedCell.setMerged(true);
+    }
+
+    public int getDistance(Cell cell, Direction direction) {
+        switch (direction){
+            case up:
+                return this.getCoord().x - cell.getCoord().x;
+
+            case down:
+                return cell.getCoord().x - this.getCoord().x;
+
+            case right:
+                return cell.getCoord().y - this.getCoord().y;
+
+            case left:
+                return this.getCoord().y - cell.getCoord().y;
+        }
+        return -1;
     }
 
     public Cell getNext(Direction direction){
@@ -190,9 +264,20 @@ public class Cell {
         return this.game.getCells().get(this);
     }
 
-    public void emptyCell() {
-        setValue(NULL);
+    public void deleteCell() {
+        game.updateCell(new Cell(), this.getCoord());
+        game.getCells().remove(this);
     }
+
+
+    public boolean isMerged() {
+        return isMerged;
+    }
+
+    public void setMerged(boolean merged) {
+        isMerged = merged;
+    }
+
 
     @Override
     public String toString() {

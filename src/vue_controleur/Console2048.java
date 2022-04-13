@@ -1,6 +1,7 @@
 package vue_controleur;
 
 import modele.Cell;
+import modele.Direction;
 import modele.Game;
 
 import java.io.IOException;
@@ -62,10 +63,10 @@ public class Console2048 extends Thread implements Observer {
                             e.printStackTrace();
                         }
 
-                        if (s.equals("4") || s.equals("8") || s.equals("6") || s.equals("2") ) {
-                            end = true;
-                            game.rnd();
-                        }
+                       if (s.equals("4") || s.equals("8") || s.equals("6") || s.equals("2") ) {
+                           end = true;
+                           game.rnd();
+                       }
                     }
 
 
@@ -89,9 +90,9 @@ public class Console2048 extends Thread implements Observer {
             for (int j = 0; j < game.getSize(); j++) {
                 Cell cell = game.getCell(i, j);
                 if (cell.getValue() != NULL) {
-                    System.out.format("%5.5s", cell.getValue());
-                } else if (cell.getValue() == 0) {
-                    System.out.format("%5.5s", "");
+                    System.out.format("%5.5s", "{" + cell.getValue() + "}");
+                } else if (cell.getValue() == NULL) {
+                    System.out.format("%5.5s", "{ }");
                 }
 
             }
@@ -100,7 +101,7 @@ public class Console2048 extends Thread implements Observer {
 
     }
 
-    private void raffraichir() {
+    private void refresh() {
         synchronized (this) {
             try {
                 notify();
@@ -113,6 +114,6 @@ public class Console2048 extends Thread implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        raffraichir();
+        refresh();
     }
 }
