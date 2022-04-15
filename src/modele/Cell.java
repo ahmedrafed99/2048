@@ -290,37 +290,37 @@ public class Cell {
     public void updateColor() {
         switch (value) {
             case 2:
-                color = new Color(255, 255, 0);
+                color = new Color(238,228,218);
                 break;
             case 4:
-                color = new Color(255, 170, 0 );
+                color = new Color(238,225,201);
                 break;
             case 8:
-                color = new Color(255, 100, 0);
+                color = new Color(243,178,122);
                 break;
             case 16:
-                color = new Color(255, 10, 0);
+                color = new Color(246,150,100);
                 break;
             case 32:
-                color = new Color(200, 0, 0);
+                color = new Color(236, 229, 29);
                 break;
             case 64:
-                color = new Color(100, 0, 0);
+                color = new Color(236, 59, 0);
                 break;
             case 128:
-                color = new Color(255, 0, 100);
+                color = new Color(243, 17, 17);
                 break;
             case 256:
-                color = new Color(255, 0, 220);
+                color = new Color(236, 218, 8);
                 break;
             case 512:
-                color = new Color(255, 0, 255);
+                color = new Color(220, 166, 11);
                 break;
             case 1024:
-                color = new Color(150, 0, 255);
+                color = new Color(236, 252, 4);
                 break;
             case 2048:
-                color = new Color(77, 51, 146);
+                color = new Color(138, 250, 37);
                 break;
             case 4096:
                 color = new Color(50, 50, 100);

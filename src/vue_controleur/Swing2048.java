@@ -69,7 +69,7 @@ public class Swing2048 extends JFrame implements Observer {
                         if (cell.getValue() == NULL) {
 
                             tabC[i][j].setText("");
-                            tabC[i][j].setBackground(new Color(255, 255, 255));
+                            tabC[i][j].setBackground(new Color(205,193,180));
 
                         } else {
                             tabC[i][j].setText(cell.getValue() + "");
