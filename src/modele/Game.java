@@ -57,11 +57,17 @@ public class Game extends Observable {
 
     public boolean hasNextMove() {
         for (Cell cell : getCells().keySet()) {
-            if (cell.getNext(Direction.up).getValue() == cell.getValue() |
-                    cell.getNext(Direction.down).getValue() == cell.getValue() |
-                    cell.getNext(Direction.right).getValue() == cell.getValue() |
-                    cell.getNext(Direction.left).getValue() == cell.getValue()) {
-                return true;
+            if (cell.getNext(Direction.up) != null) {
+                if (cell.getNext(Direction.up).getValue() == cell.getValue()) return true;
+            }
+            if (cell.getNext(Direction.down) != null) {
+                if (cell.getNext(Direction.down).getValue() == cell.getValue()) return true;
+            }
+            if (cell.getNext(Direction.left) != null) {
+                if (cell.getNext(Direction.left).getValue() == cell.getValue()) return true;
+            }
+            if (cell.getNext(Direction.right) != null) {
+                if (cell.getNext(Direction.right).getValue() == cell.getValue()) return true;
             }
         }
         return false;
@@ -252,7 +258,6 @@ public class Game extends Observable {
         for (int i = 0; i<size; i++){
             for (int j = 0; j<size; j++){
                 tabCells[i][j].setGame(this);
-                System.out.println(tabCells[i][j].getValue());
             }
         }
 
