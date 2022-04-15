@@ -25,12 +25,12 @@ public class Swing2048 extends JFrame implements Observer {
         this.game = game;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(this.game.getSize() * PIXEL_PER_SQUARE, this.game.getSize() * PIXEL_PER_SQUARE);
-        tabC = new JLabel[this.game.getSize()][this.game.getSize()];
+        tabC = new JLabel[this.game.getSize()+1][this.game.getSize()];
 
 
-        JPanel contentPane = new JPanel(new GridLayout(this.game.getSize(), this.game.getSize()));
+        JPanel contentPane = new JPanel(new GridLayout(this.game.getSize()+1, this.game.getSize()));
 
-        for (int i = 0; i < this.game.getSize(); i++) {
+        for (int i = 0; i < this.game.getSize()+1; i++) {
             for (int j = 0; j < this.game.getSize(); j++) {
                 Border border = BorderFactory.createLineBorder(Color.darkGray, 5);
                 tabC[i][j] = new JLabel();
@@ -62,6 +62,9 @@ public class Swing2048 extends JFrame implements Observer {
         SwingUtilities.invokeLater(new Runnable() { // demande au processus graphique de réaliser le traitement
             @Override
             public void run() {
+                tabC[game.getSize()][0].setText("Best score :");
+                tabC[game.getSize()][1].setText(game.getBestScore() + "");
+                tabC[game.getSize()][game.getSize()-1].setText("R : restart");
                 for (int i = 0; i < game.getSize(); i++) {
                     for (int j = 0; j < game.getSize(); j++) {
                         Cell cell = game.getCell(i, j);
@@ -97,6 +100,7 @@ public class Swing2048 extends JFrame implements Observer {
                     case KeyEvent.VK_RIGHT : game.move(Direction.right); break;
                     case KeyEvent.VK_DOWN : game.move(Direction.down); break;
                     case KeyEvent.VK_UP : game.move(Direction.up); break;
+                    case KeyEvent.VK_R : game.restart(); game.resetBestScore(); break;
                 }
             }
         });

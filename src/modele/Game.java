@@ -15,22 +15,22 @@ public class Game extends Observable {
     private HashMap<Cell, Point> cells;
     private Cell[][] tabCells;
     private static Random rnd = new Random(4);
-    private File data = new File ("/src/score.txt");
+    private File data = new File("score.txt");
 
     public Game(int size) {
         this.tabCells = new Cell[size][size];
 
         this.cells = new HashMap<>();
 
-        for (int i = 0; i<size; i++){
-            for (int j = 0; j<size; j++){
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
 
                 tabCells[i][j] = new Cell();
             }
         }
 
-        for (int i = 0; i<size; i++){
-            for (int j = 0; j<size; j++){
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 tabCells[i][j].setGame(this);
             }
         }
@@ -39,8 +39,8 @@ public class Game extends Observable {
         rnd();
     }
 
-    public void updateCell(Cell cell, Point point){
-        if (point.x >= getSize() | point.y >= getSize() | point.x < 0 | point.y < 0 ) {
+    public void updateCell(Cell cell, Point point) {
+        if (point.x >= getSize() | point.y >= getSize() | point.x < 0 | point.y < 0) {
             throw new IllegalArgumentException("Point must have coordinates inside the game board");
         }
 
@@ -55,28 +55,28 @@ public class Game extends Observable {
         }
     }
 
-    public boolean hasNextMove(){
-        for(Cell cell: getCells().keySet()){
-            if    ( cell.getNext(Direction.up).getValue() == cell.getValue() |
+    public boolean hasNextMove() {
+        for (Cell cell : getCells().keySet()) {
+            if (cell.getNext(Direction.up).getValue() == cell.getValue() |
                     cell.getNext(Direction.down).getValue() == cell.getValue() |
                     cell.getNext(Direction.right).getValue() == cell.getValue() |
-                    cell.getNext(Direction.left).getValue() == cell.getValue() ) {
+                    cell.getNext(Direction.left).getValue() == cell.getValue()) {
                 return true;
             }
         }
         return false;
     }
 
-    public void move(Direction direction){
+    public void move(Direction direction) {
         boolean hasMoved = false;
 
         switch (direction) {
             case up:
-                for (int y = 0; y<getSize(); y++){
-                    for (int x = 1; x<getSize(); x++){
+                for (int y = 0; y < getSize(); y++) {
+                    for (int x = 1; x < getSize(); x++) {
                         Cell cell = getCell(x, y);
-                        if(cell.getValue() != NULL) {
-                            if (cell.shift(Direction.up)){
+                        if (cell.getValue() != NULL) {
+                            if (cell.shift(Direction.up)) {
                                 hasMoved = true;
                             }
                         }
@@ -87,11 +87,11 @@ public class Game extends Observable {
                 break;
 
             case down:
-                for (int y = 0; y<getSize(); y++){
-                    for (int x = getSize()-2; x>=0; x--){
+                for (int y = 0; y < getSize(); y++) {
+                    for (int x = getSize() - 2; x >= 0; x--) {
                         Cell cell = getCell(x, y);
-                        if(cell.getValue() != NULL) {
-                            if (cell.shift(Direction.down)){
+                        if (cell.getValue() != NULL) {
+                            if (cell.shift(Direction.down)) {
                                 hasMoved = true;
                             }
                         }
@@ -101,11 +101,11 @@ public class Game extends Observable {
                 break;
 
             case right:
-                for (int x = 0; x<getSize(); x++){
-                    for (int y = getSize()-2; y>= 0; y--){
+                for (int x = 0; x < getSize(); x++) {
+                    for (int y = getSize() - 2; y >= 0; y--) {
                         Cell cell = getCell(x, y);
                         if (cell.getValue() != NULL) {
-                            if (cell.shift(Direction.right)){
+                            if (cell.shift(Direction.right)) {
                                 hasMoved = true;
                             }
                         }
@@ -116,11 +116,11 @@ public class Game extends Observable {
                 break;
 
             case left:
-                for (int x = 0; x<getSize(); x++){
-                    for (int y = 1; y<getSize(); y++){
+                for (int x = 0; x < getSize(); x++) {
+                    for (int y = 1; y < getSize(); y++) {
                         Cell cell = getCell(x, y);
                         if (cell.getValue() != NULL) {
-                            if (cell.shift(Direction.left)){
+                            if (cell.shift(Direction.left)) {
                                 hasMoved = true;
                             }
                         }
@@ -131,13 +131,13 @@ public class Game extends Observable {
         }
 
         if (hasMoved == true) {
-            for (Cell cell: getCells().keySet()){
+            for (Cell cell : getCells().keySet()) {
                 cell.setMerged(false);
             }
             rnd();
         }
 
-        if (this.getCells().keySet().size() == getSize()*getSize() && !hasNextMove()){
+        if (this.getCells().keySet().size() == getSize() * getSize() && !hasNextMove()) {
             System.out.println("game is over");
         }
 
@@ -152,7 +152,7 @@ public class Game extends Observable {
 
         x = rnd.nextInt(getSize());
         y = rnd.nextInt(getSize());
-        while(tabCells[x][y].getValue() != NULL) {
+        while (tabCells[x][y].getValue() != NULL) {
             x = rnd.nextInt(getSize());
             y = rnd.nextInt(getSize());
         }
@@ -169,14 +169,13 @@ public class Game extends Observable {
         }
 
 
-
         setChanged();
         notifyObservers();
 
 
     }
 
-    public void setCell(Cell cell, Point point){
+    public void setCell(Cell cell, Point point) {
         tabCells[point.x][point.y] = cell;
     }
 
@@ -185,9 +184,9 @@ public class Game extends Observable {
                 + "\t" + "(" + getSize() + "," + getSize() + ")" + "\n";
 
         StringBuilder stringBuilder = new StringBuilder(boardTitle);
-        for (int i=0; i<getSize(); i++) {
+        for (int i = 0; i < getSize(); i++) {
             stringBuilder.append("  | ");
-            for (int j=0; j<getSize(); j++){
+            for (int j = 0; j < getSize(); j++) {
                 stringBuilder.append(tabCells[i][j] + " ");
             }
             stringBuilder.append("|" + "\n");
@@ -195,9 +194,10 @@ public class Game extends Observable {
         return stringBuilder.toString();
     }
 
-    public HashMap<Cell, Point> getCells(){
+    public HashMap<Cell, Point> getCells() {
         return this.cells;
     }
+
     public int getSize() {
         return tabCells.length;
     }
@@ -207,18 +207,16 @@ public class Game extends Observable {
     }
 
 
-}
-
     public void resetBestScore() {
-        try{
+        try {
 
-            if(data.delete()){
+            if (data.delete()) {
                 System.out.println(data.getName() + " est supprimé.");
-            }else{
+            } else {
                 System.out.println("Opération de suppression echouée");
             }
 
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -240,3 +238,26 @@ public class Game extends Observable {
         }
         return 0;
     }
+
+    public void restart() {
+        int size=this.getSize();
+        this.cells.clear();
+
+        for (int i = 0; i<size; i++){
+            for (int j = 0; j<size; j++){;
+                tabCells[i][j] = new Cell(NULL);
+            }
+        }
+
+        for (int i = 0; i<size; i++){
+            for (int j = 0; j<size; j++){
+                tabCells[i][j].setGame(this);
+                System.out.println(tabCells[i][j].getValue());
+            }
+        }
+
+        rnd();
+        rnd();
+    }
+
+}

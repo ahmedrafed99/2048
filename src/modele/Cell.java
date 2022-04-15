@@ -1,6 +1,9 @@
 package modele;
 
 import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 import static java.sql.Types.NULL;
 
@@ -169,6 +172,7 @@ public class Cell {
         game.updateCell(mergedCell, cellPoint);
 
         mergedCell.setMerged(true);
+        game.getCell(mergedCell.getCoord().x, mergedCell.getCoord().y).updateFile(game.getFile());
     }
 
     public int getDistance(Cell cell, Direction direction) {
@@ -264,6 +268,23 @@ public class Cell {
     public void deleteCell() {
         game.updateCell(new Cell(), this.getCoord());
         game.getCells().remove(this);
+    }
+
+    public void updateFile(File file) {
+        int score = game.getBestScore();
+        System.out.println(score);
+
+        if (score < value) {
+            try {
+                PrintWriter writer1 = new PrintWriter(file);
+                writer1.println(value);
+                writer1.flush();
+                writer1.close();
+            } catch (FileNotFoundException ex) {
+                System.err.println("error");
+            }
+        }
+
     }
 
 
