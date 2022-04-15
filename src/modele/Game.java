@@ -1,9 +1,12 @@
 package modele;
 
 import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Random;
+import java.util.Scanner;
 
 import static java.sql.Types.NULL;
 
@@ -12,6 +15,7 @@ public class Game extends Observable {
     private HashMap<Cell, Point> cells;
     private Cell[][] tabCells;
     private static Random rnd = new Random(4);
+    private File data = new File ("/src/score.txt");
 
     public Game(int size) {
         this.tabCells = new Cell[size][size];
@@ -204,3 +208,35 @@ public class Game extends Observable {
 
 
 }
+
+    public void resetBestScore() {
+        try{
+
+            if(data.delete()){
+                System.out.println(data.getName() + " est supprimé.");
+            }else{
+                System.out.println("Opération de suppression echouée");
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public File getFile() {
+        return this.data;
+    }
+
+    public int getBestScore() {
+        if (data.exists()) {
+            try {
+                Scanner scanner = new Scanner(data);
+                if (scanner.hasNextLine())
+                    return Integer.parseInt(scanner.nextLine());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
