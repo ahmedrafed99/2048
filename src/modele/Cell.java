@@ -44,7 +44,7 @@ public class Cell {
                         }
                         else {
                             Point oldPoint = this.getCoord();
-                            game.updateCell(this, new Point(cellUp.getCoord().x, cellUp.getCoord().y - 1));
+                            game.updateCell(this, new Point(cellUp.getCoord().x+1, cellUp.getCoord().y));
                             game.updateCell(new Cell(), oldPoint);
                         }
                         return true;
@@ -77,7 +77,7 @@ public class Cell {
                         }
                         else {
                             Point oldPoint = this.getCoord();
-                            game.updateCell(this, new Point(cellDown.getCoord().x, cellDown.getCoord().y - 1));
+                            game.updateCell(this, new Point(cellDown.getCoord().x-1, cellDown.getCoord().y));
                             game.updateCell(new Cell(), oldPoint);
                         }
                         return true;
@@ -141,7 +141,7 @@ public class Cell {
                         }
                         else {
                             Point oldPoint = this.getCoord();
-                            game.updateCell(this, new Point(cellLeft.getCoord().x, cellLeft.getCoord().y - 1));
+                            game.updateCell(this, new Point(cellLeft.getCoord().x, cellLeft.getCoord().y+1));
                             game.updateCell(new Cell(), oldPoint);
                         }
                         return true;
@@ -192,7 +192,7 @@ public class Cell {
         switch (direction) {
             case up:
                 if (getCoord().x == 0) {
-                    return null;
+                    throw new IllegalArgumentException("upmost cell can't have any neighbour upwards");
                 }
                 else {
                     for (int x=getCoord().x; x>0; x--){
@@ -207,7 +207,7 @@ public class Cell {
 
             case down:
                 if (getCoord().x == game.getSize()-1) {
-                    return null;
+                    throw new IllegalArgumentException("downmost edge cell can't have any neighbour downwards");
                 }
                 else {
                     for (int x=getCoord().x; x<game.getSize()-1; x++){
@@ -222,7 +222,7 @@ public class Cell {
 
             case left:
                 if (getCoord().y == 0) {
-                    return null;
+                    throw new IllegalArgumentException("leftmost cell can't have any neighbour to the left");
                 }
                 else {
                     for (int y=getCoord().y; y>0; y--){
@@ -237,7 +237,7 @@ public class Cell {
 
             case right:
                 if (getCoord().y == game.getSize()-1) {
-                    return null;
+                    throw new IllegalArgumentException("rightmost cell can't have any neighbour to the right");
                 }
                 else {
                     for (int y = getCoord().y; y<game.getSize()-1; y++){
@@ -253,10 +253,15 @@ public class Cell {
         return null;
     }
 
-    public void setValue(int value) {
-        this.value = value;
-    }
+    public boolean hasNext(){
+        Cell nextUp = getNext(Direction.up);
+        Cell nextDown = getNext(Direction.down);
+        Cell nextRight = getNext(Direction.right);
+        Cell nextLeft = getNext(Direction.left);
 
+        return nextUp != null | nextDown != null | nextRight != null | nextLeft != null;
+
+    }
     public Point getCoord() {
         return this.game.getCells().get(this);
     }

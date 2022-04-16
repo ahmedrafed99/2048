@@ -53,10 +53,16 @@ public class Game extends Observable {
 
     public boolean hasNextMove(){
         for(Cell cell: getCells().keySet()){
-            if    ( cell.getNext(Direction.up).getValue() == cell.getValue() |
-                    cell.getNext(Direction.down).getValue() == cell.getValue() |
-                    cell.getNext(Direction.right).getValue() == cell.getValue() |
-                    cell.getNext(Direction.left).getValue() == cell.getValue() ) {
+
+            Cell nextUp = cell.getNext(Direction.up);
+            Cell nextDown = cell.getNext(Direction.down);
+            Cell nextRight = cell.getNext(Direction.right);
+            Cell nextLeft = cell.getNext(Direction.left);
+
+            if   (  nextUp != null && nextUp.getValue() == cell.getValue() |
+                    nextDown != null && nextDown.getValue() == cell.getValue() |
+                    nextRight != null && nextRight.getValue() == cell.getValue() |
+                    nextLeft != null && nextLeft.getValue() == cell.getValue()) {
                 return true;
             }
         }
@@ -136,6 +142,8 @@ public class Game extends Observable {
         if (this.getCells().keySet().size() == getSize()*getSize() && !hasNextMove()){
             System.out.println("game is over");
         }
+
+        System.out.println(getCells().keySet() + "," + getCells().keySet().size());
 
         setChanged();
         notifyObservers();

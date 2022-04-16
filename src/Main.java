@@ -12,7 +12,7 @@ public class Main {
         mainConsole();
         mainSwing();
 
-        Game game = new Game(4);
+        /*Game game = new Game(4);
         game.updateCell(new Cell(2), new Point(1,0));
         game.updateCell(new Cell(4), new Point(3,1));
         game.updateCell(new Cell(2), new Point(2,2));
@@ -26,7 +26,7 @@ public class Main {
 
         game.move(Direction.right);
         System.out.println(game.getCells().keySet());
-        System.out.println(game);
+        System.out.println(game);*/
 
 
 
