@@ -18,11 +18,13 @@ public class Game extends Observable {
     private Cell[][] tabCells;
     private static Random rnd = new Random(4);
     private File data = new File("score.txt");
-    Instant instantStart = Instant.now();
-    double timeElapsed;
+    private Instant instantStart;
+    private double timeElapsed;
+    private boolean gameOver;
 
 
     public Game(int size) {
+        gameOver = false;
         this.tabCells = new Cell[size][size];
 
         this.cells = new HashMap<>();
@@ -40,8 +42,14 @@ public class Game extends Observable {
             }
         }
 
-        ThreadGetActualTime();
         rnd();
+        rnd();
+        instantStart = Instant.now();
+        ThreadGetActualTime();
+    }
+
+    public boolean getGameOver() {
+        return gameOver;
     }
 
     public void updateCell(Cell cell, Point point) {
@@ -151,6 +159,7 @@ public class Game extends Observable {
 
         if (this.getCells().keySet().size() == getSize() * getSize() && !hasNextMove()) {
             System.out.println("game is over");
+            gameOver = true;
         }
 
         setChanged();
@@ -179,6 +188,7 @@ public class Game extends Observable {
                 updateCell(new Cell(4), new Point(x, y));
                 break;
         }
+        getCell(x, y).updateFile(data);
 
 
         setChanged();
@@ -251,15 +261,33 @@ public class Game extends Observable {
         return 0;
     }
 
+    public double getBestTime() {
 
-    public double getTimeElapsed() {
-        return timeElapsed;
+        if (data.exists()) {
+            try {
+                Scanner scanner = new Scanner(data);
+                if (scanner.hasNextLine())
+                    scanner.nextLine();
+                    if (scanner.hasNextLine()) return Double.parseDouble(scanner.nextLine());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+
+    public double getTimeElapsedMillis() {
+        return timeElapsed/1000.0;
+    }
+    public int getTimeElapsed() {
+        return (int)timeElapsed/1000;
     }
 
     public synchronized void setTimeElapsed() {
         Instant instantStop = Instant.now();
         System.out.println(Duration.between(instantStart, instantStop).toMillis());
-        timeElapsed = Duration.between(instantStart, instantStop).toSeconds();
+        timeElapsed = Duration.between(instantStart, instantStop).toMillis();
         setChanged();
         notifyObservers();
     }
@@ -267,7 +295,8 @@ public class Game extends Observable {
     public void ThreadGetActualTime() {
         new Thread() {
             public synchronized void run() {
-                while (true) {
+                while (!gameOver) {
+                    System.out.println(gameOver);
                     setTimeElapsed();
                     System.out.println(activeCount());
 
@@ -282,6 +311,7 @@ public class Game extends Observable {
     }
 
     public void restart() {
+        gameOver = false;
         int size=this.getSize();
         this.cells.clear();
 
@@ -299,6 +329,7 @@ public class Game extends Observable {
 
         rnd();
         rnd();
+        instantStart = Instant.now();
     }
 
 }

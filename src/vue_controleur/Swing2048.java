@@ -15,7 +15,7 @@ import java.util.Observer;
 import static java.sql.Types.NULL;
 
 public class Swing2048 extends JFrame implements Observer {
-    private static final int PIXEL_PER_SQUARE = 60;
+    private static final int PIXEL_PER_SQUARE = 180;
     // tableau de cases : i, j -> case graphique
     private JLabel[][] tabC;
     private Game game;
@@ -25,16 +25,22 @@ public class Swing2048 extends JFrame implements Observer {
         this.game = game;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(this.game.getSize() * PIXEL_PER_SQUARE, this.game.getSize() * PIXEL_PER_SQUARE);
-        tabC = new JLabel[this.game.getSize()+1][this.game.getSize()];
+        tabC = new JLabel[this.game.getSize()+3][this.game.getSize()];
 
 
-        JPanel contentPane = new JPanel(new GridLayout(this.game.getSize()+1, this.game.getSize()));
+        JPanel contentPane = new JPanel(new GridLayout(this.game.getSize()+3, this.game.getSize()));
 
-        for (int i = 0; i < this.game.getSize()+1; i++) {
+        for (int i = 0; i < this.game.getSize()+3; i++) {
             for (int j = 0; j < this.game.getSize(); j++) {
-                Border border = BorderFactory.createLineBorder(Color.darkGray, 5);
                 tabC[i][j] = new JLabel();
-                tabC[i][j].setBorder(border);
+                if (i== game.getSize()) {
+                    Border border = BorderFactory.createLineBorder(Color.darkGray, 90);
+                    tabC[i][j].setBorder(border);
+                }
+                else {
+                    Border border = BorderFactory.createLineBorder(Color.darkGray, 5);
+                    tabC[i][j].setBorder(border);
+                }
                 tabC[i][j].setHorizontalAlignment(SwingConstants.CENTER);
                 tabC[i][j].setFont(new Font("Serif", Font.BOLD, 20));
                 tabC[i][j].setOpaque(true);
@@ -62,10 +68,24 @@ public class Swing2048 extends JFrame implements Observer {
         SwingUtilities.invokeLater(new Runnable() { // demande au processus graphique de réaliser le traitement
             @Override
             public void run() {
-                tabC[game.getSize()][0].setText("Best score :");
-                tabC[game.getSize()][1].setText(game.getBestScore() + "");
-                tabC[game.getSize()][2].setText((int)game.getTimeElapsed()+ "s");
-                tabC[game.getSize()][game.getSize()-1].setText("R : restart");
+                if (game.getGameOver()) {
+                    Border border = BorderFactory.createLineBorder(Color.darkGray, 5);
+                    tabC[game.getSize() ][1].setBorder(border);
+                    tabC[game.getSize() ][2].setBorder(border);
+                    tabC[game.getSize() ][1].setText("GAME");
+                    tabC[game.getSize() ][2].setText("OVER");
+                }
+
+                tabC[game.getSize()+1][0].setText("Best score :");
+                tabC[game.getSize()+1][1].setText("Best time :");
+                tabC[game.getSize()+1][2].setText("Timer :");
+                tabC[game.getSize()+1][game.getSize()-1].setText("R restart");
+
+                tabC[game.getSize()+2][0].setText(game.getBestScore()+"");
+                tabC[game.getSize()+2][1].setText(game.getBestTime() + "");
+                tabC[game.getSize()+2][2].setText(game.getTimeElapsed()+ "s");
+                tabC[game.getSize()+2][game.getSize()-1].setText("B resetRecord");
+
                 for (int i = 0; i < game.getSize(); i++) {
                     for (int j = 0; j < game.getSize(); j++) {
                         Cell cell = game.getCell(i, j);
@@ -101,7 +121,8 @@ public class Swing2048 extends JFrame implements Observer {
                     case KeyEvent.VK_RIGHT : game.move(Direction.right); break;
                     case KeyEvent.VK_DOWN : game.move(Direction.down); break;
                     case KeyEvent.VK_UP : game.move(Direction.up); break;
-                    case KeyEvent.VK_R : game.restart(); game.resetBestScore(); break;
+                    case KeyEvent.VK_R : game.restart(); break;
+                    case KeyEvent.VK_B : game.resetBestScore(); break;
                 }
             }
         });
