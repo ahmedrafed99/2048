@@ -64,6 +64,7 @@ public class Swing2048 extends JFrame implements Observer {
             public void run() {
                 tabC[game.getSize()][0].setText("Best score :");
                 tabC[game.getSize()][1].setText(game.getBestScore() + "");
+                tabC[game.getSize()][2].setText((int)game.getTimeElapsed()+ "s");
                 tabC[game.getSize()][game.getSize()-1].setText("R : restart");
                 for (int i = 0; i < game.getSize(); i++) {
                     for (int j = 0; j < game.getSize(); j++) {

@@ -3,6 +3,8 @@ package modele;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Random;
@@ -16,6 +18,9 @@ public class Game extends Observable {
     private Cell[][] tabCells;
     private static Random rnd = new Random(4);
     private File data = new File("score.txt");
+    Instant instantStart = Instant.now();
+    double timeElapsed;
+
 
     public Game(int size) {
         this.tabCells = new Cell[size][size];
@@ -35,7 +40,7 @@ public class Game extends Observable {
             }
         }
 
-
+        ThreadGetActualTime();
         rnd();
     }
 
@@ -141,6 +146,7 @@ public class Game extends Observable {
                 cell.setMerged(false);
             }
             rnd();
+            System.out.println(getCells().size());
         }
 
         if (this.getCells().keySet().size() == getSize() * getSize() && !hasNextMove()) {
@@ -243,6 +249,36 @@ public class Game extends Observable {
             }
         }
         return 0;
+    }
+
+
+    public double getTimeElapsed() {
+        return timeElapsed;
+    }
+
+    public synchronized void setTimeElapsed() {
+        Instant instantStop = Instant.now();
+        System.out.println(Duration.between(instantStart, instantStop).toMillis());
+        timeElapsed = Duration.between(instantStart, instantStop).toSeconds();
+        setChanged();
+        notifyObservers();
+    }
+
+    public void ThreadGetActualTime() {
+        new Thread() {
+            public synchronized void run() {
+                while (true) {
+                    setTimeElapsed();
+                    System.out.println(activeCount());
+
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
     }
 
     public void restart() {
