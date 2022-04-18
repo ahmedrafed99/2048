@@ -23,8 +23,9 @@ public class Swing2048 extends JFrame implements Observer {
 
     public Swing2048(Game game) {
         this.game = game;
+        setTitle("2048 GAME");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(this.game.getSize() * PIXEL_PER_SQUARE, this.game.getSize() * PIXEL_PER_SQUARE);
+        setSize(this.game.getSize()+3 * PIXEL_PER_SQUARE, this.game.getSize() * PIXEL_PER_SQUARE);
         tabC = new JLabel[this.game.getSize()+3][this.game.getSize()];
 
 
@@ -74,6 +75,11 @@ public class Swing2048 extends JFrame implements Observer {
                     tabC[game.getSize() ][2].setBorder(border);
                     tabC[game.getSize() ][1].setText("GAME");
                     tabC[game.getSize() ][2].setText("OVER");
+                }
+                else {
+                    Border border = BorderFactory.createLineBorder(Color.darkGray, 90);
+                    tabC[game.getSize() ][1].setBorder(border);
+                    tabC[game.getSize() ][2].setBorder(border);
                 }
 
                 tabC[game.getSize()+1][0].setText("Best score :");

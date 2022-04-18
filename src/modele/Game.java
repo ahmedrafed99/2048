@@ -22,7 +22,6 @@ public class Game extends Observable {
     private double timeElapsed;
     private boolean gameOver;
 
-
     public Game(int size) {
         gameOver = false;
         this.tabCells = new Cell[size][size];
@@ -154,7 +153,6 @@ public class Game extends Observable {
                 cell.setMerged(false);
             }
             rnd();
-            System.out.println(getCells().size());
         }
 
         if (this.getCells().keySet().size() == getSize() * getSize() && !hasNextMove()) {
@@ -162,6 +160,7 @@ public class Game extends Observable {
             gameOver = true;
         }
 
+        System.out.println(getCells().size());
         setChanged();
         notifyObservers();
     }
@@ -185,7 +184,7 @@ public class Game extends Observable {
                 updateCell(new Cell(2), new Point(x, y));
                 break;
             case 1:
-                updateCell(new Cell(4), new Point(x, y));
+                updateCell(new Cell(512), new Point(x, y));
                 break;
         }
         getCell(x, y).updateFile(data);
@@ -286,7 +285,7 @@ public class Game extends Observable {
 
     public synchronized void setTimeElapsed() {
         Instant instantStop = Instant.now();
-        System.out.println(Duration.between(instantStart, instantStop).toMillis());
+        //System.out.println(Duration.between(instantStart, instantStop).toMillis());
         timeElapsed = Duration.between(instantStart, instantStop).toMillis();
         setChanged();
         notifyObservers();
@@ -296,9 +295,9 @@ public class Game extends Observable {
         new Thread() {
             public synchronized void run() {
                 while (!gameOver) {
-                    System.out.println(gameOver);
+                    //System.out.println(gameOver);
                     setTimeElapsed();
-                    System.out.println(activeCount());
+                    //System.out.println(activeCount());
 
                     try {
                         Thread.sleep(100);
@@ -329,6 +328,7 @@ public class Game extends Observable {
 
         rnd();
         rnd();
+        ThreadGetActualTime();
         instantStart = Instant.now();
     }
 

@@ -272,12 +272,19 @@ public class Cell {
 
     public void updateFile(File file) {
         int score = game.getBestScore();
+        double time = game.getBestTime();
         System.out.println(score);
 
-        if (score < value) {
+        if (score < value || value == 2048) {
             try {
                 PrintWriter writer1 = new PrintWriter(file);
                 writer1.println(value);
+                if (value == 2048 && (game.getTimeElapsedMillis() < time || time == 0.0) ) {
+                    writer1.println(game.getTimeElapsedMillis());
+                }
+                else {
+                    writer1.println(time);
+                }
                 writer1.flush();
                 writer1.close();
             } catch (FileNotFoundException ex) {
