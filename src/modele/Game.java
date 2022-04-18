@@ -93,65 +93,66 @@ public class Game extends Observable {
 
     public void move(Direction direction) {
         boolean hasMoved = false;
-
-        switch (direction) {
-            case up:
-                for (int y = 0; y < getSize(); y++) {
-                    for (int x = 1; x < getSize(); x++) {
-                        Cell cell = getCell(x, y);
-                        if (cell.getValue() != NULL) {
-                            if (cell.shift(Direction.up)) {
-                                hasMoved = true;
+        if (!unlockRunning) {
+            switch (direction) {
+                case up:
+                    for (int y = 0; y < getSize(); y++) {
+                        for (int x = 1; x < getSize(); x++) {
+                            Cell cell = getCell(x, y);
+                            if (cell.getValue() != NULL) {
+                                if (cell.shift(Direction.up)) {
+                                    hasMoved = true;
+                                }
                             }
-                        }
 
-                    }
-                }
-
-                break;
-
-            case down:
-                for (int y = 0; y < getSize(); y++) {
-                    for (int x = getSize() - 2; x >= 0; x--) {
-                        Cell cell = getCell(x, y);
-                        if (cell.getValue() != NULL) {
-                            if (cell.shift(Direction.down)) {
-                                hasMoved = true;
-                            }
                         }
                     }
-                }
 
-                break;
+                    break;
 
-            case right:
-                for (int x = 0; x < getSize(); x++) {
-                    for (int y = getSize() - 2; y >= 0; y--) {
-                        Cell cell = getCell(x, y);
-                        if (cell.getValue() != NULL) {
-                            if (cell.shift(Direction.right)) {
-                                hasMoved = true;
-                            }
-                        }
-
-                    }
-                }
-
-                break;
-
-            case left:
-                for (int x = 0; x < getSize(); x++) {
-                    for (int y = 1; y < getSize(); y++) {
-                        Cell cell = getCell(x, y);
-                        if (cell.getValue() != NULL) {
-                            if (cell.shift(Direction.left)) {
-                                hasMoved = true;
+                case down:
+                    for (int y = 0; y < getSize(); y++) {
+                        for (int x = getSize() - 2; x >= 0; x--) {
+                            Cell cell = getCell(x, y);
+                            if (cell.getValue() != NULL) {
+                                if (cell.shift(Direction.down)) {
+                                    hasMoved = true;
+                                }
                             }
                         }
                     }
-                }
 
-                break;
+                    break;
+
+                case right:
+                    for (int x = 0; x < getSize(); x++) {
+                        for (int y = getSize() - 2; y >= 0; y--) {
+                            Cell cell = getCell(x, y);
+                            if (cell.getValue() != NULL) {
+                                if (cell.shift(Direction.right)) {
+                                    hasMoved = true;
+                                }
+                            }
+
+                        }
+                    }
+
+                    break;
+
+                case left:
+                    for (int x = 0; x < getSize(); x++) {
+                        for (int y = 1; y < getSize(); y++) {
+                            Cell cell = getCell(x, y);
+                            if (cell.getValue() != NULL) {
+                                if (cell.shift(Direction.left)) {
+                                    hasMoved = true;
+                                }
+                            }
+                        }
+                    }
+
+                    break;
+            }
         }
 
         if (hasMoved == true) {

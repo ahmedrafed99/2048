@@ -276,7 +276,12 @@ public class Cell {
         if (score < value || value == 2048) {
             try {
                 PrintWriter writer1 = new PrintWriter(file);
-                writer1.println(value);
+                if (score > value) {
+                    writer1.println(score);
+                }
+                else {
+                    writer1.println(value);
+                }
                 if (value == 2048 && (game.getTimeElapsedMillis() < time || time == 0.0) ) {
                     writer1.println(game.getTimeElapsedMillis());
                 }
