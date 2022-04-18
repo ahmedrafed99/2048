@@ -9,13 +9,15 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Observable;
 import java.util.Observer;
 
 import static java.sql.Types.NULL;
 
 public class Swing2048 extends JFrame implements Observer {
-    private static final int PIXEL_PER_SQUARE = 180;
+    public static final int PIXEL_PER_SQUARE = 100;
     // tableau de cases : i, j -> case graphique
     private JLabel[][] tabC;
     private Game game;
@@ -25,7 +27,7 @@ public class Swing2048 extends JFrame implements Observer {
         this.game = game;
         setTitle("2048 GAME");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(this.game.getSize()+3 * PIXEL_PER_SQUARE, this.game.getSize() * PIXEL_PER_SQUARE);
+        setSize(this.game.getSize() * PIXEL_PER_SQUARE, (this.game.getSize()+3) * PIXEL_PER_SQUARE);
         tabC = new JLabel[this.game.getSize()+3][this.game.getSize()];
 
 
@@ -54,6 +56,7 @@ public class Swing2048 extends JFrame implements Observer {
         }
         setContentPane(contentPane);
         addKeyboardListener();
+        addMouseListener();
         refresh();
 
     }
@@ -116,7 +119,7 @@ public class Swing2048 extends JFrame implements Observer {
     }
 
     /**
-     * Correspond à la fonctionnalité de Contrôleur : écoute les évènements, et déclenche des traitements sur le modèle
+     * Correspond à la fonctionnalité de Contrôleur : écoute les évènements (touche clavier), et déclenche des traitements sur le modèle
      */
     private void addKeyboardListener() {
         addKeyListener(new KeyAdapter() { // new KeyAdapter() { ... } est une instance de classe anonyme, il s'agit d'un objet qui correspond au controleur dans MVC
@@ -130,6 +133,23 @@ public class Swing2048 extends JFrame implements Observer {
                     case KeyEvent.VK_R : game.restart(); break;
                     case KeyEvent.VK_B : game.resetBestScore(); break;
                 }
+            }
+        });
+    }
+    /**
+     * Correspond à la fonctionnalité de Contrôleur : écoute les évènements (clic souris), et déclenche des traitements sur le modèle
+     */
+    public void addMouseListener() {
+        addMouseListener(new MouseAdapter() { // new MouseAdapter() { ... } est une instance de classe anonyme, il s'agit d'un objet qui correspond au controleur dans MVC
+            @Override
+            public void mousePressed(MouseEvent e) { 
+                System.out.println((-35+e.getY())/PIXEL_PER_SQUARE + "," + e.getX()/PIXEL_PER_SQUARE);
+                game.setUnlocked(e.getX(), e.getY());
+            }
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                System.out.println((-35+e.getY())/PIXEL_PER_SQUARE + "," + e.getX()/PIXEL_PER_SQUARE);
+                game.switchPosition(e.getX(), e.getY());
             }
         });
     }

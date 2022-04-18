@@ -27,8 +27,6 @@ public class Cell {
         this.isMerged = false;
     }
 
-
-
     public boolean shift(Direction direction){
         switch (direction){
             case up :

@@ -11,6 +11,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import static java.sql.Types.NULL;
+import static vue_controleur.Swing2048.PIXEL_PER_SQUARE;
 
 public class Game extends Observable {
 
@@ -21,8 +22,13 @@ public class Game extends Observable {
     private Instant instantStart;
     private double timeElapsed;
     private boolean gameOver;
+    private int unlock;
+    private boolean unlockRunning;
+    private Point unlockedPosition;
 
     public Game(int size) {
+        unlock = 100;
+        unlockRunning = false;
         gameOver = false;
         this.tabCells = new Cell[size][size];
 
@@ -153,6 +159,7 @@ public class Game extends Observable {
                 cell.setMerged(false);
             }
             rnd();
+            System.out.println("hm size :"+cells.size());
         }
 
         if (this.getCells().keySet().size() == getSize() * getSize() && !hasNextMove()) {
@@ -330,6 +337,46 @@ public class Game extends Observable {
         rnd();
         ThreadGetActualTime();
         instantStart = Instant.now();
+    }
+
+
+    public void setUnlocked(int mouseX, int mouseY) {
+        int tabX = (mouseY-35)/PIXEL_PER_SQUARE;
+        int tabY = mouseX/PIXEL_PER_SQUARE;
+        if (tabX<getSize() && tabY<getSize()) {
+            if (unlock > 0 && !unlockRunning) {
+                System.out.println(unlock + ", " + unlockRunning);
+                unlockRunning = true;
+                unlockedPosition = new Point(tabX, tabY);
+                System.out.println(unlock + ", " + unlockRunning + ", " + tabCells[tabX][tabY].getValue() + ", " + unlockedPosition);
+            }
+        }
+    }
+
+    public void switchPosition(int mouseX, int mouseY) {
+        int tabX = (mouseY-35)/PIXEL_PER_SQUARE;
+        int tabY = mouseX/PIXEL_PER_SQUARE;
+        if (unlockRunning) {
+            if (tabX < getSize() && tabY < getSize()) {
+                if (tabX != unlockedPosition.x || tabY != unlockedPosition.y) {
+                    unlock -= 1;
+                    Cell unlocked =null;
+                    unlocked = getCell(unlockedPosition.x, unlockedPosition.y);
+                    updateCell(getCell(tabX, tabY), new Point(unlockedPosition.x, unlockedPosition.y));
+                    updateCell(unlocked, new Point(tabX, tabY));
+                    System.out.println(unlock + ", " + unlockRunning);
+                    /*Cell tmp = (Cell) tabCells[tabX][tabY].clone();
+                    tabCells[tabX][tabY] = unlocked;
+                    cells.replace(tabCells[tabX][tabY], unlocked.getCoord(), new Point (tabX, tabY));
+                    unlocked = tmp;*/
+                    System.out.println(unlock + ", " + unlockRunning + ", " + tabCells[tabX][tabY].getValue());
+                }
+            }
+        }
+        unlockedPosition = null;
+        unlockRunning = false;
+        setChanged();
+        notifyObservers();
     }
 
 }
