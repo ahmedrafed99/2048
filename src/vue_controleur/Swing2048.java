@@ -23,6 +23,10 @@ public class Swing2048 extends JFrame implements Observer {
     private Game game;
 
 
+    /**
+     * Correspond à la fonctionnalité de Vue : Constructeur de la fenêtre correspondant au jeu passé en paramètre
+     * @param game modèle du jeu sur lequel on joue
+     */
     public Swing2048(Game game) {
         this.game = game;
         setTitle("2048 GAME");

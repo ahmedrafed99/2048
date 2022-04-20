@@ -26,6 +26,11 @@ public class Game extends Observable {
     private boolean unlockRunning;
     private Point unlockedPosition;
 
+
+    /**
+     * Constructeur du jeu en fonction de la taille de la grille passée en paramètre
+     * @param size entier représentant la taille de la grille du jeu
+     */
     public Game(int size) {
         unlock = 100;
         unlockRunning = false;
@@ -53,10 +58,20 @@ public class Game extends Observable {
         ThreadGetActualTime();
     }
 
+    /**
+     * retourne un booléen qui dit si la partie est perdue ou non
+     */
     public boolean getGameOver() {
         return gameOver;
     }
 
+    /**
+     * Met à jour la cellule passée en paramètre à la position passée en paramètre.
+     * Si la cellule existe déjà dans le jeu, elle est simplement remplacée dans la hashmap, sinon, elle est ajoutée dans la hashmap
+     * On appelle également updateColor, et on lui affecte le jeu courant en attribut
+     * @param cell la cellule que l'on veut mettre ou modifier
+     * @param point le point auquel on veut ajouter ou déplacer la dite cellule
+     */
     public void updateCell(Cell cell, Point point) {
         if (point.x >= getSize() | point.y >= getSize() | point.x < 0 | point.y < 0) {
             throw new IllegalArgumentException("Point must have coordinates inside the game board");
@@ -73,6 +88,9 @@ public class Game extends Observable {
         }
     }
 
+    /**
+     * Renvoie un booléen à true si la partie n'a plus de mouvement disponible (autrement dit si le joueur est bloqué) et false sinon.
+     */
     public boolean hasNextMove() {
         for (Cell cell : getCells().keySet()) {
             if (cell.getNext(Direction.up) != null) {
@@ -92,81 +110,114 @@ public class Game extends Observable {
     }
 
     public void move(Direction direction) {
-        boolean hasMoved = false;
-        if (!unlockRunning) {
-            switch (direction) {
-                case up:
-                    for (int y = 0; y < getSize(); y++) {
-                        for (int x = 1; x < getSize(); x++) {
-                            Cell cell = getCell(x, y);
-                            if (cell.getValue() != NULL) {
-                                if (cell.shift(Direction.up)) {
-                                    hasMoved = true;
+        new Thread() {
+            public void run() {
+                boolean hasMoved = false;
+                if (!unlockRunning) {
+                    switch (direction) {
+                        case up:
+                            for (int y = 0; y < getSize(); y++) {
+                                for (int x = 1; x < getSize(); x++) {
+                                    Cell cell = getCell(x, y);
+                                    if (cell.getValue() != NULL) {
+                                        if (cell.shift(Direction.up)) {
+                                            try {
+                                                Thread.sleep(50);
+                                                setChanged();
+                                                notifyObservers();
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            hasMoved = true;
+                                        }
+                                    }
+
                                 }
                             }
 
-                        }
-                    }
+                            break;
 
-                    break;
-
-                case down:
-                    for (int y = 0; y < getSize(); y++) {
-                        for (int x = getSize() - 2; x >= 0; x--) {
-                            Cell cell = getCell(x, y);
-                            if (cell.getValue() != NULL) {
-                                if (cell.shift(Direction.down)) {
-                                    hasMoved = true;
-                                }
-                            }
-                        }
-                    }
-
-                    break;
-
-                case right:
-                    for (int x = 0; x < getSize(); x++) {
-                        for (int y = getSize() - 2; y >= 0; y--) {
-                            Cell cell = getCell(x, y);
-                            if (cell.getValue() != NULL) {
-                                if (cell.shift(Direction.right)) {
-                                    hasMoved = true;
+                        case down:
+                            for (int y = 0; y < getSize(); y++) {
+                                for (int x = getSize() - 2; x >= 0; x--) {
+                                    Cell cell = getCell(x, y);
+                                    if (cell.getValue() != NULL) {
+                                        if (cell.shift(Direction.down)) {
+                                            try {
+                                                Thread.sleep(50);
+                                                setChanged();
+                                                notifyObservers();
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            hasMoved = true;
+                                        }
+                                    }
                                 }
                             }
 
-                        }
-                    }
+                            break;
 
-                    break;
+                        case right:
+                            for (int x = 0; x < getSize(); x++) {
+                                for (int y = getSize() - 2; y >= 0; y--) {
+                                    Cell cell = getCell(x, y);
+                                    if (cell.getValue() != NULL) {
+                                        if (cell.shift(Direction.right)) {
+                                            try {
+                                                Thread.sleep(50);
+                                                setChanged();
+                                                notifyObservers();
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            hasMoved = true;
+                                        }
+                                    }
 
-                case left:
-                    for (int x = 0; x < getSize(); x++) {
-                        for (int y = 1; y < getSize(); y++) {
-                            Cell cell = getCell(x, y);
-                            if (cell.getValue() != NULL) {
-                                if (cell.shift(Direction.left)) {
-                                    hasMoved = true;
                                 }
                             }
-                        }
-                    }
 
-                    break;
+                            break;
+
+                        case left:
+                            for (int x = 0; x < getSize(); x++) {
+                                for (int y = 1; y < getSize(); y++) {
+                                    Cell cell = getCell(x, y);
+                                    if (cell.getValue() != NULL) {
+                                        if (cell.shift(Direction.left)) {
+                                            try {
+                                                Thread.sleep(50);
+                                                setChanged();
+                                                notifyObservers();
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            hasMoved = true;
+                                        }
+                                    }
+                                }
+                            }
+
+                            break;
+                    }
+                }
+                if (hasMoved == true) {
+                    for (Cell cell : getCells().keySet()) {
+                        cell.setMerged(false);
+                    }
+                    rnd();
+                    System.out.println("hm size :" + cells.size());
+                }
+
+                if (getCells().keySet().size() == getSize() * getSize() && !hasNextMove()) {
+                    System.out.println("game is over");
+                    gameOver = true;
+                }
             }
-        }
+        }.start();
 
-        if (hasMoved == true) {
-            for (Cell cell : getCells().keySet()) {
-                cell.setMerged(false);
-            }
-            rnd();
-            System.out.println("hm size :"+cells.size());
-        }
 
-        if (this.getCells().keySet().size() == getSize() * getSize() && !hasNextMove()) {
-            System.out.println("game is over");
-            gameOver = true;
-        }
 
         System.out.println(getCells().size());
         setChanged();
@@ -376,6 +427,17 @@ public class Game extends Observable {
         }
         unlockedPosition = null;
         unlockRunning = false;
+
+        if (this.getCells().keySet().size() == getSize() * getSize() ) {
+            if (!gameOver && !hasNextMove()) {
+                System.out.println("game is over");
+                gameOver = true;
+            }
+            else if (gameOver && hasNextMove()) {
+                gameOver = false;
+            }
+        }
+
         setChanged();
         notifyObservers();
     }
