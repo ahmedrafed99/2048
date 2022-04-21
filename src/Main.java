@@ -9,10 +9,10 @@ import java.awt.*;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        //mainConsole();
-        mainSwing();
+        mainConsole();
+        //mainSwing();
 
-        Game game = new Game(4);
+        /*Game game = new Game(4);
         game.updateCell(new Cell(2), new Point(1,0));
         game.updateCell(new Cell(4), new Point(3,1));
         game.updateCell(new Cell(2), new Point(2,2));
@@ -30,7 +30,7 @@ public class Main {
 
 
 
-        System.out.println("taille :                       "+game.getCells().keySet().toArray().length);
+        System.out.println("taille :                       "+game.getCells().keySet().toArray().length);*/
 
         //game.move(Direction.up);
 

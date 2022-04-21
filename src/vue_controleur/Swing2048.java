@@ -34,6 +34,8 @@ public class Swing2048 extends JFrame implements Observer {
         setSize(this.game.getSize() * PIXEL_PER_SQUARE, (this.game.getSize()+3) * PIXEL_PER_SQUARE);
         tabC = new JLabel[this.game.getSize()+3][this.game.getSize()];
 
+        addMenuBar();
+
 
         JPanel contentPane = new JPanel(new GridLayout(this.game.getSize()+3, this.game.getSize()));
 
@@ -65,6 +67,44 @@ public class Swing2048 extends JFrame implements Observer {
 
     }
 
+
+    public void addMenuBar() {
+        MenuBar ret=new MenuBar();
+        Menu settings=new Menu("Settings");
+        Menu switchNb=new Menu("Switch number");
+        MenuItem switchNb0=new MenuItem("0");
+        MenuItem switchNb1=new MenuItem("1");
+        MenuItem switchNb3=new MenuItem("3");
+        MenuItem switchNb5=new MenuItem("5");
+        MenuItem quitm=new MenuItem("Quit");
+        settings.addSeparator();
+        switchNb.add(switchNb0);
+        switchNb.add(switchNb1);
+        switchNb.add(switchNb3);
+        switchNb.add(switchNb5);
+        switchNb1.addActionListener(e -> game.setUnlock(1));
+        switchNb3.addActionListener(e -> game.setUnlock(3));
+        switchNb5.addActionListener(e -> game.setUnlock(5));
+        switchNb0.addActionListener(e -> game.setUnlock(0));
+        settings.add(switchNb);
+
+        quitm.addActionListener(e -> System.exit(1));
+        settings.add(quitm);
+
+        ret.add(settings);
+
+        Menu game1=new Menu("Game");
+        MenuItem project = new MenuItem("LIFAP7 Project");
+        Menu dev = new Menu("Developped by");
+        MenuItem dev1 = new MenuItem("ABDULSATTAR Ahmed");
+        MenuItem dev2 = new MenuItem("JEANNIN Dylan");
+        dev.add(dev1);
+        dev.add(dev2);
+        game1.add(project);
+        game1.add(dev);
+        ret.add(game1);
+        setMenuBar(ret);
+    }
 
 
 
