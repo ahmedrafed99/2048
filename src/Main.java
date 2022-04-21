@@ -10,7 +10,9 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         mainConsole();
-        mainSwing();
+        //mainSwing();
+
+
 
         /*Game game = new Game(4);
         game.updateCell(new Cell(2), new Point(1,0));

@@ -11,11 +11,12 @@ public class Game extends Observable {
 
     private HashMap<Cell, Point> cells;
     private Cell[][] tabCells;
-    private static Random rnd = new Random(4);
+    private static Random rnd = new Random(System.currentTimeMillis());
+    private Player player1;
+    private Player player2;
 
     public Game(int size) {
         this.tabCells = new Cell[size][size];
-
         this.cells = new HashMap<>();
 
         for (int i = 0; i<size; i++){
@@ -31,6 +32,11 @@ public class Game extends Observable {
             }
         }
 
+        this.player1 = new Player();
+        this.player2 = new Player();
+
+        this.player1.setGame(this);
+        this.player2.setGame(this);
 
         rnd();
     }
@@ -143,7 +149,7 @@ public class Game extends Observable {
             System.out.println("game is over");
         }
 
-        System.out.println(getCells().keySet() + "," + getCells().keySet().size());
+
 
         setChanged();
         notifyObservers();
