@@ -196,7 +196,7 @@ public class Cell {
         switch (direction) {
             case up:
                 if (getCoord().x == 0) {
-                    throw new IllegalArgumentException("upmost cell can't have any neighbour upwards");
+                    return null;
                 }
                 else {
                     for (int x=getCoord().x; x>0; x--){
@@ -211,7 +211,7 @@ public class Cell {
 
             case down:
                 if (getCoord().x == game.getSize()-1) {
-                    throw new IllegalArgumentException("downmost edge cell can't have any neighbour downwards");
+                    return null;
                 }
                 else {
                     for (int x=getCoord().x; x<game.getSize()-1; x++){
@@ -226,7 +226,7 @@ public class Cell {
 
             case left:
                 if (getCoord().y == 0) {
-                    throw new IllegalArgumentException("leftmost cell can't have any neighbour to the left");
+                    return null;
                 }
                 else {
                     for (int y=getCoord().y; y>0; y--){
@@ -241,7 +241,7 @@ public class Cell {
 
             case right:
                 if (getCoord().y == game.getSize()-1) {
-                    throw new IllegalArgumentException("rightmost cell can't have any neighbour to the right");
+                    return null;
                 }
                 else {
                     for (int y = getCoord().y; y<game.getSize()-1; y++){

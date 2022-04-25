@@ -30,6 +30,9 @@ public class Game extends Observable {
 
 
     public Game(int size) {
+        unlock = 1;
+        unlockRunning = false;
+        isGameOver = false;
         this.tabCells = new Cell[size][size];
         this.cells = new HashMap<>();
 
@@ -75,19 +78,23 @@ public class Game extends Observable {
         }
     }
 
-    public boolean hasNextMove(){
-        for(Cell cell: getCells().keySet()){
-
-            Cell nextUp = cell.getNext(Direction.up);
-            Cell nextDown = cell.getNext(Direction.down);
-            Cell nextRight = cell.getNext(Direction.right);
-            Cell nextLeft = cell.getNext(Direction.left);
-
-            if   (  nextUp != null && nextUp.getValue() == cell.getValue() |
-                    nextDown != null && nextDown.getValue() == cell.getValue() |
-                    nextRight != null && nextRight.getValue() == cell.getValue() |
-                    nextLeft != null && nextLeft.getValue() == cell.getValue()) {
-                return true;
+    /**
+     * Cette méthode analyse pour chaque cellule, si son voisin direct dans toutes les directions, a une valeur égale à elle même ou non, pour déterminer s'il reste des mouvements possibles.
+     * @return false si toutes les cases adjacentes sont de valeurs différentes, true sinon.
+     */
+    private boolean hasNextMove() {
+        for (Cell cell : getCells().keySet()) {
+            if (cell.getNext(Direction.up) != null) {
+                if (cell.getNext(Direction.up).getValue() == cell.getValue()) return true;
+            }
+            if (cell.getNext(Direction.down) != null) {
+                if (cell.getNext(Direction.down).getValue() == cell.getValue()) return true;
+            }
+            if (cell.getNext(Direction.left) != null) {
+                if (cell.getNext(Direction.left).getValue() == cell.getValue()) return true;
+            }
+            if (cell.getNext(Direction.right) != null) {
+                if (cell.getNext(Direction.right).getValue() == cell.getValue()) return true;
             }
         }
         return false;

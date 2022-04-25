@@ -17,7 +17,7 @@ import java.util.Observer;
 import static java.sql.Types.NULL;
 
 public class Swing2048 extends JFrame implements Observer {
-    public static final int PIXEL_PER_SQUARE = 60;
+    public static final int PIXEL_PER_SQUARE = 100;
     // tableau de cases : i, j -> case graphique
     private JLabel[][] tabC;
     private Game game;
@@ -27,15 +27,16 @@ public class Swing2048 extends JFrame implements Observer {
         this.game = game;
         setTitle("2048 GAME");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(this.game.getSize() * PIXEL_PER_SQUARE, this.game.getSize() * PIXEL_PER_SQUARE);
-        tabC = new JLabel[this.game.getSize()][this.game.getSize()];
+        setSize(this.game.getSize() * PIXEL_PER_SQUARE, 65+(this.game.getSize()+3) * PIXEL_PER_SQUARE);
+        tabC = new JLabel[this.game.getSize()+3][this.game.getSize()];
 
         addMenuBar();
 
-        JPanel contentPane = new JPanel(new GridLayout(this.game.getSize(), this.game.getSize()));
+        JPanel contentPane = new JPanel(new GridLayout(this.game.getSize()+3, this.game.getSize()));
 
-        for (int i = 0; i < this.game.getSize(); i++) {
+        for (int i = 0; i < this.game.getSize()+3; i++) {
             for (int j = 0; j < this.game.getSize(); j++) {
+                tabC[i][j] = new JLabel();
                 if (i== game.getSize()) {
                     Border border = BorderFactory.createLineBorder(Color.darkGray, 90);
                     tabC[i][j].setBorder(border);
