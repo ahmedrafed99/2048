@@ -346,7 +346,6 @@ public class Cell {
     public void updateFile(File file) {
         int score = game.getBestScore();
         double time = game.getBestTime();
-        System.out.println(score);
 
         if (score < value || value == 2048) {
             try {

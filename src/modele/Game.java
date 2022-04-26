@@ -119,85 +119,87 @@ public class Game extends Observable {
      * @param direction La direction vers laquelle on veut envoyer les cases (qui correspond à la direction de la flèche sur laquelle on a appuyé)
      */
     public void move(Direction direction){
-        boolean hasMoved = false;
+        new Thread() { // permet de libérer le processus graphique ou de la console
+            public void run() {
+                boolean hasMoved = false;
 
-        if(!unlockRunning) {
-            switch (direction) {
-                case up:
-                    for (int y = 0; y<getSize(); y++){
-                        for (int x = 1; x<getSize(); x++){
-                            Cell cell = getCell(x, y);
-                            if(cell.getValue() != NULL) {
-                                if (cell.shift(Direction.up)){
-                                    hasMoved = true;
+                if (!unlockRunning) {
+                    switch (direction) {
+                        case up:
+                            for (int y = 0; y < getSize(); y++) {
+                                for (int x = 1; x < getSize(); x++) {
+                                    Cell cell = getCell(x, y);
+                                    if (cell.getValue() != NULL) {
+                                        if (cell.shift(Direction.up)) {
+                                            hasMoved = true;
+                                        }
+                                    }
+
                                 }
                             }
 
-                        }
-                    }
+                            break;
 
-                    break;
-
-                case down:
-                    for (int y = 0; y<getSize(); y++){
-                        for (int x = getSize()-2; x>=0; x--){
-                            Cell cell = getCell(x, y);
-                            if(cell.getValue() != NULL) {
-                                if (cell.shift(Direction.down)){
-                                    hasMoved = true;
-                                }
-                            }
-                        }
-                    }
-
-                    break;
-
-                case right:
-                    for (int x = 0; x<getSize(); x++){
-                        for (int y = getSize()-2; y>= 0; y--){
-                            Cell cell = getCell(x, y);
-                            if (cell.getValue() != NULL) {
-                                if (cell.shift(Direction.right)){
-                                    hasMoved = true;
+                        case down:
+                            for (int y = 0; y < getSize(); y++) {
+                                for (int x = getSize() - 2; x >= 0; x--) {
+                                    Cell cell = getCell(x, y);
+                                    if (cell.getValue() != NULL) {
+                                        if (cell.shift(Direction.down)) {
+                                            hasMoved = true;
+                                        }
+                                    }
                                 }
                             }
 
-                        }
-                    }
+                            break;
 
-                    break;
+                        case right:
+                            for (int x = 0; x < getSize(); x++) {
+                                for (int y = getSize() - 2; y >= 0; y--) {
+                                    Cell cell = getCell(x, y);
+                                    if (cell.getValue() != NULL) {
+                                        if (cell.shift(Direction.right)) {
+                                            hasMoved = true;
+                                        }
+                                    }
 
-                case left:
-                    for (int x = 0; x<getSize(); x++){
-                        for (int y = 1; y<getSize(); y++){
-                            Cell cell = getCell(x, y);
-                            if (cell.getValue() != NULL) {
-                                if (cell.shift(Direction.left)){
-                                    hasMoved = true;
                                 }
                             }
-                        }
-                    }
 
-                    break;
+                            break;
+
+                        case left:
+                            for (int x = 0; x < getSize(); x++) {
+                                for (int y = 1; y < getSize(); y++) {
+                                    Cell cell = getCell(x, y);
+                                    if (cell.getValue() != NULL) {
+                                        if (cell.shift(Direction.left)) {
+                                            hasMoved = true;
+                                        }
+                                    }
+                                }
+                            }
+
+                            break;
+                    }
+                }
+
+
+                if (hasMoved == true) {
+                    for (Cell cell : getCells().keySet()) {
+                        cell.setMerged(false);
+                    }
+                    rnd();
+                }
+
+                if (getCells().keySet().size() == getSize() * getSize() && !hasNextMove()) {
+                    isGameOver = true;
+                }
             }
-        }
-
-
-        if (hasMoved == true) {
-            for (Cell cell: getCells().keySet()){
-                cell.setMerged(false);
-            }
-            rnd();
-            System.out.println("hm size :" + cells.size());
-        }
-
-        if (this.getCells().keySet().size() == getSize()*getSize() && !hasNextMove()){
-            System.out.println("game is over");
-            isGameOver = true;
-            setChanged();
-            notifyObservers();
-        }
+        }.start();
+        setChanged();
+        notifyObservers();
     }
 
     /**
@@ -365,7 +367,6 @@ public class Game extends Observable {
      */
     private synchronized void setTimeElapsed() {
         Instant instantStop = Instant.now();
-        //System.out.println(Duration.between(instantStart, instantStop).toMillis());
         timeElapsed = Duration.between(instantStart, instantStop).toMillis();
         setChanged();
         notifyObservers();
@@ -378,9 +379,7 @@ public class Game extends Observable {
         new Thread() {
             public synchronized void run() {
                 while (!isGameOver) {
-                    //System.out.println(gameOver);
                     setTimeElapsed();
-                    //System.out.println(activeCount());
 
                     try {
                         Thread.sleep(1);
@@ -429,10 +428,8 @@ public class Game extends Observable {
         int tabY = mouseX/PIXEL_PER_SQUARE;
         if (tabX<getSize() && tabY<getSize()) {
             if (unlock > 0 && !unlockRunning) {
-                System.out.println(unlock + ", " + unlockRunning);
                 unlockRunning = true;
                 unlockedPosition = new Point(tabX, tabY);
-                System.out.println(unlock + ", " + unlockRunning + ", " + tabCells[tabX][tabY].getValue() + ", " + unlockedPosition);
             }
         }
     }
@@ -465,7 +462,6 @@ public class Game extends Observable {
                     unlocked = getCell(unlockedPosition.x, unlockedPosition.y);
                     updateCell(getCell(tabX, tabY), new Point(unlockedPosition.x, unlockedPosition.y));
                     updateCell(unlocked, new Point(tabX, tabY));
-                    System.out.println(unlock + ", " + unlockRunning + ", " + tabCells[tabX][tabY].getValue());
                 }
             }
         }
@@ -474,7 +470,6 @@ public class Game extends Observable {
 
         if (this.getCells().keySet().size() == getSize() * getSize() ) {
             if (!isGameOver && !hasNextMove()) {
-                System.out.println("game is over");
                 isGameOver = true;
             }
             else if (isGameOver && hasNextMove()) {

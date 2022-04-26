@@ -65,25 +65,25 @@ public class Console2048 extends Thread implements Observer {
                             e.printStackTrace();
                         }
 
-                       switch(s) {
-                           case "z":
-                               end = true;
-                               game.move(Direction.up);
-                               break;
-                           case "s":
-                               end = true;
-                               game.move(Direction.down);
-                               break;
+                        if (s.equals("z")) {
+                            end = true;
+                            game.move(Direction.up);
+                        }
 
-                           case "q":
-                               end = true;
-                               game.move(Direction.left);
-                               break;
-                           case "d":
-                               end = true;
-                               game.move(Direction.right);
-                               break;
-                       }
+                        if (s.equals("q")) {
+                            end = true;
+                            game.move(Direction.left);
+                        }
+
+                        if (s.equals("s")) {
+                            end = true;
+                            game.move(Direction.down);
+                        }
+
+                        if (s.equals("d")) {
+                            end = true;
+                            game.move(Direction.right);
+                        }
 
 
                     }
