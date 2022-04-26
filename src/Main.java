@@ -10,8 +10,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         mainConsole();
-        //mainSwing();
-
+        mainSwing();
 
     }
 
@@ -21,7 +20,6 @@ public class Main {
         game.addObserver(vue);
 
         vue.start();
-
     }
 
     public static void mainSwing() {

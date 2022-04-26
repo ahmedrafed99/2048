@@ -21,7 +21,6 @@ public class Console2048 extends Thread implements Observer {
 
     public Console2048(Game game) {
         this.game = game;
-
     }
 
 
@@ -50,11 +49,6 @@ public class Console2048 extends Thread implements Observer {
      */
     private void listenKeyboardEvents() {
         final Object _this = this;
-
-        new Thread() {
-            public void run() {
-
-                synchronized (_this) {
                     boolean end = false;
 
                     while (!end) {
@@ -65,34 +59,31 @@ public class Console2048 extends Thread implements Observer {
                             e.printStackTrace();
                         }
 
-                       switch(s) {
-                           case "z":
-                               end = true;
-                               game.move(Direction.up);
-                               break;
-                           case "s":
-                               end = true;
-                               game.move(Direction.down);
-                               break;
+                        switch (s) {
+                            case "z":
+                                end = true;
+                                game.move(Direction.up);
 
-                           case "q":
-                               end = true;
-                               game.move(Direction.left);
-                               break;
-                           case "d":
-                               end = true;
-                               game.move(Direction.right);
-                               break;
-                       }
+                                break;
+
+                            case "s":
+                                end = true;
+                                game.move(Direction.down);
+                                break;
+
+                            case "q":
+                                end = true;
+                                game.move(Direction.left);
+                                break;
+
+                            case "d":
+                                end = true;
+                                game.move(Direction.right);
+                                break;
+                        }
 
 
                     }
-
-
-                }
-
-            }
-        }.start();
 
 
     }
@@ -103,7 +94,7 @@ public class Console2048 extends Thread implements Observer {
     private void display()  {
 
 
-        System.out.printf("\033[H\033[J"); // permet d'effacer la console (ne fonctionne pas toujours depuis la console de l'IDE)
+        System.out.print("\033[H\033[J"); // permet d'effacer la console (ne fonctionne pas toujours depuis la console de l'IDE)
 
         for (int i = 0; i < game.getSize(); i++) {
             for (int j = 0; j < game.getSize(); j++) {
