@@ -38,6 +38,7 @@ public class Game extends Observable {
 
         for (int i = 0; i<size; i++){
             for (int j = 0; j<size; j++){
+
                 tabCells[i][j] = new Cell();
             }
         }
@@ -55,6 +56,7 @@ public class Game extends Observable {
         this.player1.setGame(this);
         this.player2.setGame(this);
 
+        rnd();
         rnd();
         instantStart = Instant.now();
         ThreadGetActualTime();
@@ -205,8 +207,8 @@ public class Game extends Observable {
 
         getCell(x, y).updateFile(data);
 
-        //setChanged();
-        //notifyObservers();
+        setChanged();
+        notifyObservers();
 
 
     }
@@ -214,6 +216,7 @@ public class Game extends Observable {
     public void setCell(Cell cell, Point point){
         tabCells[point.x][point.y] = cell;
     }
+
     public String toString() {
         String boardTitle = "Board" + this.getClass().getName() + "\n"
                 + "\t" + "(" + getSize() + "," + getSize() + ")" + "\n";
@@ -228,12 +231,14 @@ public class Game extends Observable {
         }
         return stringBuilder.toString();
     }
+
     public HashMap<Cell, Point> getCells(){
         return this.cells;
     }
     public int getSize() {
         return tabCells.length;
     }
+
     public Cell getCell(int i, int j) {
         return tabCells[i][j];
     }
@@ -286,7 +291,6 @@ public class Game extends Observable {
         if (data.exists()) {
             try {
                 Scanner scanner = new Scanner(data);
-
                 if (scanner.hasNextLine())
                     scanner.nextLine();
                 if (scanner.hasNextLine()) return Double.parseDouble(scanner.nextLine());
@@ -330,7 +334,9 @@ public class Game extends Observable {
         new Thread() {
             public synchronized void run() {
                 while (!isGameOver) {
+                    //System.out.println(gameOver);
                     setTimeElapsed();
+                    //System.out.println(activeCount());
 
                     try {
                         Thread.sleep(1);
