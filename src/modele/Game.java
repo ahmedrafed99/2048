@@ -28,7 +28,10 @@ public class Game extends Observable {
     private Player player1;
     private Player player2;
 
-
+    /**
+     * Constructeur du jeu en fonction de la taille de la grille passée en paramètre
+     * @param size entier représentant la taille de la grille du jeu
+     */
     public Game(int size) {
         unlock = 1;
         unlockRunning = false;
@@ -62,6 +65,13 @@ public class Game extends Observable {
         ThreadGetActualTime();
     }
 
+    /**
+     * Met à jour la cellule passée en paramètre à la position passée en paramètre.
+     * Si la cellule existe déjà dans le jeu, elle est simplement remplacée dans la hashmap, sinon, elle est ajoutée dans la hashmap
+     * On appelle également updateColor, et on lui affecte le jeu courant en attribut
+     * @param cell la cellule que l'on veut mettre ou modifier
+     * @param point le point auquel on veut ajouter ou déplacer la dite cellule
+     */
     public void updateCell(Cell cell, Point point){
         if (point.x >= getSize() | point.y >= getSize() | point.x < 0 | point.y < 0 ) {
             throw new IllegalArgumentException("Point must have coordinates inside the game board");
@@ -100,6 +110,14 @@ public class Game extends Observable {
         return false;
     }
 
+    /**
+     * Méthode principale qui est appelée lorsque l'on appuie sur une flèche dans l'interface du jeu, elle bouge les cases en appelant successivement la méthode shift sur chaque cellule, de la plus proche du bord
+     * à la plus éloignée. Elle initialise un booléen hasMoved à false, qui ne passe à true que si au moins une case a pu bouger. Si aucune case n'a bougé, rien ne se passe, sinon, on peut appeler la fonction rnd()
+     * qui va placer une nouvelle case au hasard après avoir fait le déplacement de toutes les cases déjà présentes sur la grille. On verifie ensuite qu'un mouvement est possible avec la nouvelle grille, en faisant
+     * appel, si le nombre de cellules présentes est égal à la taille de la grille, à la méthode hasNextMove(), le cas échéant, on passe le booléen gameOver à false.
+     * Elle n'effectue ces actions que si le processus d'échange entre deux cases n'est pas en cours (ie. on empêche d'appuyer sur les flèches si le bouton de souris est enfoncé sur une case de la grille)
+     * @param direction La direction vers laquelle on veut envoyer les cases (qui correspond à la direction de la flèche sur laquelle on a appuyé)
+     */
     public void move(Direction direction){
         boolean hasMoved = false;
 
@@ -182,7 +200,10 @@ public class Game extends Observable {
         }
     }
 
-
+    /**
+     * Fonction qui tire au hasard une case dans le tableau (jusqu'à trouver une case libre), puis tire au hasard une valeur pour y ajouter une nouvelle cellule, de la valeur en question.
+     * Elle notifie l'observer que le modèle a changé pour que l'interface se mette à jour.
+     */
     public void rnd() {
 
         int r, x, y;
@@ -213,10 +234,18 @@ public class Game extends Observable {
 
     }
 
+    /**
+     * Methode qui va placer dans le tableau de cellules, la cellule passé en paramètre au point passé en paramètre
+     * @param cell la cellule que l'on veut ajouter dans le tableau
+     * @param point le point auquel on veut ajouter la cellule dans le tableau
+     */
     public void setCell(Cell cell, Point point){
         tabCells[point.x][point.y] = cell;
     }
 
+    /**
+     * @return une chaine de caractères représantant l'état courant du jeu
+     */
     public String toString() {
         String boardTitle = "Board" + this.getClass().getName() + "\n"
                 + "\t" + "(" + getSize() + "," + getSize() + ")" + "\n";
@@ -232,17 +261,32 @@ public class Game extends Observable {
         return stringBuilder.toString();
     }
 
-    public HashMap<Cell, Point> getCells(){
+    /**
+     * @return l'attribut hashMap qui contient les cellules du jeu
+     */
+    public HashMap<Cell, Point> getCells() {
         return this.cells;
     }
+
+    /**
+     * @return la taille du tableau de jeu, autrement dit, la dimension du jeu (ex: retourne 4 si le jeu est un 4x4)
+     */
     public int getSize() {
         return tabCells.length;
     }
 
+    /**
+     * @param i l'indice de la ligne du tableau
+     * @param j l'indice de la colonne du tableau
+     * @return la cellule stockée dans le tableau à l'indice (i, j)
+     */
     public Cell getCell(int i, int j) {
         return tabCells[i][j];
     }
 
+    /**
+     * Methode qui supprime le fichier data passé en attribut de la classe Game, et qui va implicitement écraser les données sauvegardées pour le meilleur temps et le meilleur score
+     */
     public void resetBestScore() {
         try {
 
@@ -441,7 +485,10 @@ public class Game extends Observable {
         setChanged();
         notifyObservers();
     }
-
+    /**
+     * Methode get pour obtenir l'attribut gameOver (private)
+     * @return l'attribut gameOver
+     */
     public boolean isGameOver() {
         return isGameOver;
     }
