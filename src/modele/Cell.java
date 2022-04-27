@@ -310,19 +310,19 @@ public class Cell {
                 color = new Color(236, 229, 29);
                 break;
             case 64:
-                color = new Color(236, 59, 0);
+                color = new Color(255, 150, 0);
                 break;
             case 128:
-                color = new Color(243, 17, 17);
+                color = new Color(200, 50, 17);
                 break;
             case 256:
-                color = new Color(236, 218, 8);
+                color = new Color(255, 0, 8);
                 break;
             case 512:
-                color = new Color(220, 166, 11);
+                color = new Color(255, 0, 100);
                 break;
             case 1024:
-                color = new Color(236, 252, 4);
+                color = new Color(255, 0, 200);
                 break;
             case 2048:
                 color = new Color(138, 250, 37);

@@ -171,11 +171,9 @@ public class Game extends Observable {
                 cell.setMerged(false);
             }
             rnd();
-            System.out.println("hm size :" + cells.size());
         }
 
         if (this.getCells().keySet().size() == getSize()*getSize() && !hasNextMove()){
-            System.out.println("game is over");
             isGameOver = true;
             setChanged();
             notifyObservers();
@@ -207,8 +205,6 @@ public class Game extends Observable {
 
         getCell(x, y).updateFile(data);
 
-        setChanged();
-        notifyObservers();
 
 
     }
@@ -245,13 +241,7 @@ public class Game extends Observable {
 
     public void resetBestScore() {
         try {
-
-            if (data.delete()) {
-                System.out.println(data.getName() + " est supprimé.");
-            } else {
-                System.out.println("Opération de suppression echouée");
-            }
-
+            data.delete();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -321,7 +311,6 @@ public class Game extends Observable {
      */
     private synchronized void setTimeElapsed() {
         Instant instantStop = Instant.now();
-        //System.out.println(Duration.between(instantStart, instantStop).toMillis());
         timeElapsed = Duration.between(instantStart, instantStop).toMillis();
         setChanged();
         notifyObservers();
@@ -334,9 +323,7 @@ public class Game extends Observable {
         new Thread() {
             public synchronized void run() {
                 while (!isGameOver) {
-                    //System.out.println(gameOver);
                     setTimeElapsed();
-                    //System.out.println(activeCount());
 
                     try {
                         Thread.sleep(1);
@@ -385,10 +372,8 @@ public class Game extends Observable {
         int tabY = mouseX/PIXEL_PER_SQUARE;
         if (tabX<getSize() && tabY<getSize()) {
             if (unlock > 0 && !unlockRunning) {
-                System.out.println(unlock + ", " + unlockRunning);
                 unlockRunning = true;
                 unlockedPosition = new Point(tabX, tabY);
-                System.out.println(unlock + ", " + unlockRunning + ", " + tabCells[tabX][tabY].getValue() + ", " + unlockedPosition);
             }
         }
     }
@@ -421,7 +406,6 @@ public class Game extends Observable {
                     unlocked = getCell(unlockedPosition.x, unlockedPosition.y);
                     updateCell(getCell(tabX, tabY), new Point(unlockedPosition.x, unlockedPosition.y));
                     updateCell(unlocked, new Point(tabX, tabY));
-                    System.out.println(unlock + ", " + unlockRunning + ", " + tabCells[tabX][tabY].getValue());
                 }
             }
         }
@@ -430,11 +414,11 @@ public class Game extends Observable {
 
         if (this.getCells().keySet().size() == getSize() * getSize() ) {
             if (!isGameOver && !hasNextMove()) {
-                System.out.println("game is over");
                 isGameOver = true;
             }
             else if (isGameOver && hasNextMove()) {
                 isGameOver = false;
+                ThreadGetActualTime();
             }
         }
 
