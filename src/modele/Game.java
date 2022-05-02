@@ -3,6 +3,7 @@ package modele;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -215,7 +216,7 @@ public class Game extends Observable {
                 break;
         }
 
-        getCell(x, y).updateFile(data);
+        updateFile(getCell(x, y));
 
     }
 
@@ -254,7 +255,7 @@ public class Game extends Observable {
         updateCell(mergedCell, cellPoint);
 
         mergedCell.setMerged(true);
-        getCell(getCoord(mergedCell).x, getCoord(mergedCell).y).updateFile(getFile());
+        updateFile(getCell(getCoord(mergedCell).x, getCoord(mergedCell).y));
     }
 
     /**
@@ -596,6 +597,39 @@ public class Game extends Observable {
 
         setChanged();
         notifyObservers();
+    }
+
+    /**
+     * Met à jour le fichier des scores.
+     * On enregistre d'abord les données du fichiers dans des variables, puis on compare le meilleur score avec la valeur de la cellule,
+     * et si on est sur une case 2048, on compare le meilleur temps avec le temps actuel, puis on restock ces meilleures valeurs dans le fichier
+     * @param cell la cellule sur laquelle on veut mettre à jour le fichier
+     */
+    public void updateFile(Cell cell) {
+        int score = getBestScore();
+        double time = getBestTime();
+
+        if (score < cell.getValue() || cell.getValue() == 2048) {
+            try {
+                PrintWriter writer1 = new PrintWriter(data);
+                if (score > cell.getValue()) {
+                    writer1.println(score);
+                }
+                else {
+                    writer1.println(cell.getValue());
+                }
+                if (cell.getValue() == 2048 && (getTimeElapsedMillis() < time || time == 0.0) ) {
+                    writer1.println(getTimeElapsedMillis());
+                }
+                else {
+                    writer1.println(time);
+                }
+                writer1.flush();
+                writer1.close();
+            } catch (FileNotFoundException ex) {
+                System.err.println("error");
+            }
+        }
     }
 
     /**
