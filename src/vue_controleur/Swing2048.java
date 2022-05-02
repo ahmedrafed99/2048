@@ -23,6 +23,13 @@ public class Swing2048 extends JFrame implements Observer {
     private Game game;
 
 
+    /**
+     * Cette procédure affiche dans une JFrame, le jeu passé en paramètre, en affichant une grille de la taille correspondante, avec quelques cases supplémentaire
+     * qui gèrent le temps de jeu, le meilleur temps pour atteindre 2048, la plus grosse case constituée etc
+     * On affecte également un MenuBar, où il est possible de modifier le nombre de déblocages et la taille du jeu entre autres.
+     * On y affecte également des listener pour le clavier et la souris, afin de pouvoir soliciter les actions de l'utilisateur et les calculs du modèle.
+     * @param game Le jeu que l'on souhaite afficher sur la fenêtre
+     */
     public Swing2048(Game game) {
         this.game = game;
         setTitle("2048 GAME");
@@ -62,7 +69,12 @@ public class Swing2048 extends JFrame implements Observer {
 
     }
 
-    public void Swing2048(int size){
+    /**
+     * Cette procédure, appelée dans le cas où l'on souhaite changer la taille du jeu via le menu, va réinitialiser la fenêtre, avant de refaire un nouveau jeu
+     * de la taille souhaitée avec le constructeur, et de l'afficher de nouveau.
+     * @param size la taille du nouveau jeu que l'on souhaite afficher
+     */
+    private void Swing2048(int size){
         getContentPane().invalidate();
         getContentPane().validate();
         getContentPane().repaint();
@@ -98,7 +110,12 @@ public class Swing2048 extends JFrame implements Observer {
 
     }
 
-    public void addMenuBar() {
+    /**
+     * Initialisation du MenuBar, avec les différents items et les fonctions appelées lors d'un clic sur un item
+     * On retrouve la possibilité de changer la taille de la grille, de changer notre nombre de déblocages (changer la difficulté par la même occasion)
+     * On a aussi un item qui permet de quitter le jeu, et d'autres items qui permettent de consulter les règles etc
+     */
+    private void addMenuBar() {
         MenuBar ret=new MenuBar();
         Menu settings=new Menu("Settings");
         Menu switchNb=new Menu("Switch number");
@@ -226,8 +243,6 @@ public class Swing2048 extends JFrame implements Observer {
                 }
             }
         });
-
-
     }
 
     /**
@@ -249,6 +264,9 @@ public class Swing2048 extends JFrame implements Observer {
         });
     }
 
+    /**
+     * Correspond à la fonctionnalité de Contrôleur : écoute les évènements, et déclenche des traitements sur le modèle
+     */
     public void addMouseListener() {
         addMouseListener(new MouseAdapter() { // new MouseAdapter() { ... } est une instance de classe anonyme, il s'agit d'un objet qui correspond au controleur dans MVC
             @Override

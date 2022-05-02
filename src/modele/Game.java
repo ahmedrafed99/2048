@@ -25,10 +25,12 @@ public class Game extends Observable {
     private int unlock;
     private boolean unlockRunning;
     private Point unlockedPosition;
-    private Player player1;
-    private Player player2;
 
 
+    /**
+     * Constructeur du jeu en fonction de la taille de la grille passée en paramètre
+     * @param size entier représentant la taille de la grille du jeu
+     */
     public Game(int size) {
         unlock = 1;
         unlockRunning = false;
@@ -49,19 +51,19 @@ public class Game extends Observable {
             }
         }
 
-
-
-        this.player1 = new Player();
-        this.player2 = new Player();
-        this.player1.setGame(this);
-        this.player2.setGame(this);
-
         rnd();
         rnd();
         instantStart = Instant.now();
         ThreadGetActualTime();
     }
 
+    /**
+     * Met à jour la cellule passée en paramètre à la position passée en paramètre.
+     * Si la cellule existe déjà dans le jeu, elle est simplement remplacée dans la hashmap, sinon, elle est ajoutée dans la hashmap
+     * On appelle également updateColor, et on lui affecte le jeu courant en attribut
+     * @param cell la cellule que l'on veut mettre ou modifier
+     * @param point le point auquel on veut ajouter ou déplacer la dite cellule
+     */
     public void updateCell(Cell cell, Point point){
         if (point.x >= getSize() | point.y >= getSize() | point.x < 0 | point.y < 0 ) {
             throw new IllegalArgumentException("Point must have coordinates inside the game board");
@@ -74,7 +76,7 @@ public class Game extends Observable {
         if (!cells.containsKey(cell) && cell.getValue() != 0) {
             cells.put(getCell(point.x, point.y), point);
         } else {
-            cells.replace(cell, cell.getCoord(), point);
+            cells.replace(cell, getCoord(cell), point);
         }
     }
 
@@ -84,22 +86,30 @@ public class Game extends Observable {
      */
     private boolean hasNextMove() {
         for (Cell cell : getCells().keySet()) {
-            if (cell.getNext(Direction.up) != null) {
-                if (cell.getNext(Direction.up).getValue() == cell.getValue()) return true;
+            if (getNext(cell, Direction.up) != null) {
+                if (getNext(cell, Direction.up).getValue() == cell.getValue()) return true;
             }
-            if (cell.getNext(Direction.down) != null) {
-                if (cell.getNext(Direction.down).getValue() == cell.getValue()) return true;
+            if (getNext(cell, Direction.down) != null) {
+                if (getNext(cell, Direction.down).getValue() == cell.getValue()) return true;
             }
-            if (cell.getNext(Direction.left) != null) {
-                if (cell.getNext(Direction.left).getValue() == cell.getValue()) return true;
+            if (getNext(cell, Direction.left) != null) {
+                if (getNext(cell, Direction.left).getValue() == cell.getValue()) return true;
             }
-            if (cell.getNext(Direction.right) != null) {
-                if (cell.getNext(Direction.right).getValue() == cell.getValue()) return true;
+            if (getNext(cell, Direction.right) != null) {
+                if (getNext(cell, Direction.right).getValue() == cell.getValue()) return true;
             }
         }
         return false;
     }
 
+    /**
+     * Méthode principale qui est appelée lorsque l'on appuie sur une flèche dans l'interface du jeu, elle bouge les cases en appelant successivement la méthode shift sur chaque cellule, de la plus proche du bord
+     * à la plus éloignée. Elle initialise un booléen hasMoved à false, qui ne passe à true que si au moins une case a pu bouger. Si aucune case n'a bougé, rien ne se passe, sinon, on peut appeler la fonction rnd()
+     * qui va placer une nouvelle case au hasard après avoir fait le déplacement de toutes les cases déjà présentes sur la grille. On verifie ensuite qu'un mouvement est possible avec la nouvelle grille, en faisant
+     * appel, si le nombre de cellules présentes est égal à la taille de la grille, à la méthode hasNextMove(), le cas échéant, on passe le booléen gameOver à false.
+     * Elle n'effectue ces actions que si le processus d'échange entre deux cases n'est pas en cours (ie. on empêche d'appuyer sur les flèches si le bouton de souris est enfoncé sur une case de la grille)
+     * @param direction La direction vers laquelle on veut envoyer les cases (qui correspond à la direction de la flèche sur laquelle on a appuyé)
+     */
     public void move(Direction direction){
         boolean hasMoved = false;
 
@@ -180,7 +190,9 @@ public class Game extends Observable {
         }
     }
 
-
+    /**
+     * Fonction qui tire au hasard une case dans le tableau (jusqu'à trouver une case libre), puis tire au hasard une valeur pour y ajouter une nouvelle cellule, de la valeur en question.
+     */
     public void rnd() {
 
         int r, x, y;
@@ -205,22 +217,161 @@ public class Game extends Observable {
 
         getCell(x, y).updateFile(data);
 
-
-
     }
 
+    /** Retourne la valeur, dans la hashmap, associée à la clé passée en paramètre
+     * @param cell la case dont on souhaite connaitre les coordonnées dans le jeu
+     * @return le Point2D où se situe la case que l'on cherche
+     */
+    public Point getCoord(Cell cell) {
+        return this.getCells().get(cell);
+    }
+
+    /**
+     * Cette procédure vient mettre à jour la case que l'on souhaite supprimer, en remplacer cette case à sa position par une nouvelle case de valeur nulle dans le tableau,
+     * puis elle est supprimée de la hashmap
+     * @param cell la case que l'on souhaite supprimer du tableau et de la hashmap
+     */
+    public void deleteCell(Cell cell) {
+        updateCell(new Cell(), getCoord(cell));
+        cells.remove(cell);
+    }
+
+    /**
+     * Cette procédure sert à fusionner deux cases passées en paramètre, en créant une nouvelle cellule de valeur doublée, pui en supprimant chacune des deux cases passées
+     * en paramètre. On place ensuite la cellule nouvellement créée dans le tableau et la hashmap, avant de lui signifier qu'elle a été fusionnée (et qu'elle ne peut plus être
+     * fusionnée à nouveau dans la suite du coup)
+     * On met ensuite à jour le fichier en appelant updateFile.
+     * @param cell1
+     * @param cell2
+     */
+    public void merge(Cell cell1, Cell cell2){
+        Cell mergedCell = new Cell(cell1.getValue()*2);
+        Point cellPoint = new Point(getCoord(cell2).x, getCoord(cell2).y);
+
+        deleteCell(cell1);
+        deleteCell(cell2);
+        updateCell(mergedCell, cellPoint);
+
+        mergedCell.setMerged(true);
+        getCell(getCoord(mergedCell).x, getCoord(mergedCell).y).updateFile(getFile());
+    }
+
+    /**
+     *Cette procédure sert à retourner le voisin le plus proche de la case passée en paramètre, dans la direction passée en paramètre
+     * @param cell la case dont on veut connaître le voisin
+     * @param direction la direction dans laquelle on veut connaître son voisin
+     * @return la cellule non nulle la plus proche dans la direction choisie, ou null si cette case n'a aucun voisin dans cette direction
+     */
+    public Cell getNext(Cell cell, Direction direction){
+        switch (direction) {
+            case up:
+                if (getCoord(cell).x == 0) {
+                    return null;
+                }
+                else {
+                    for (int x=getCoord(cell).x; x>0; x--){
+                        Cell nextUp = getCell(x-1, getCoord(cell).y);
+                        if(nextUp.getValue() != NULL) {
+                            return nextUp;
+                        }
+
+                    }
+                    return null;
+                }
+
+            case down:
+                if (getCoord(cell).x == getSize()-1) {
+                    return null;
+                }
+                else {
+                    for (int x=getCoord(cell).x; x<getSize()-1; x++){
+                        Cell nextDown = getCell(x+1, getCoord(cell).y);
+                        if(nextDown.getValue() != NULL) {
+                            return nextDown;
+                        }
+
+                    }
+                    return null;
+                }
+
+            case left:
+                if (getCoord(cell).y == 0) {
+                    return null;
+                }
+                else {
+                    for (int y=getCoord(cell).y; y>0; y--){
+                        Cell nextLeft = getCell(getCoord(cell).x, y-1);
+                        if(nextLeft.getValue() != NULL) {
+                            return nextLeft;
+                        }
+
+                    }
+                    return null;
+                }
+
+            case right:
+                if (getCoord(cell).y == getSize()-1) {
+                    return null;
+                }
+                else {
+                    for (int y = getCoord(cell).y; y<getSize()-1; y++){
+                        Cell nextRight = getCell(getCoord(cell).x, y+1);
+                        if(nextRight.getValue() != NULL) {
+                            return nextRight;
+                        }
+
+                    }
+                    return null;
+                }
+        }
+        return null;
+    }
+
+    /**
+     * Cette procédure retourne la distance, selon une direction, depuis la case cellStart jusqu'à la case cellEnd.
+     * @param cellStart la case de départ pour calculer notre distance
+     * @param cellEnd la case d'arrivée
+     * @param direction la direction dans laquelle on souhaite calculer notre distance
+     * @return la distance dans la direction donnée entre les deux cases (getDistance( (2,2), (3,4), down) renverra 3-2 = 1)
+     */
+    public int getDistance(Cell cellStart, Cell cellEnd, Direction direction) {
+        switch (direction){
+            case up:
+                return getCoord(cellStart).x - getCoord(cellEnd).x;
+
+            case down:
+                return getCoord(cellEnd).x - getCoord(cellStart).x;
+
+            case right:
+                return getCoord(cellEnd).y - getCoord(cellStart).y;
+
+            case left:
+                return getCoord(cellStart).y - getCoord(cellEnd).y;
+        }
+        return -1;
+    }
+
+    /**
+     * Cette procédure affecte une case donnée à une position donnée du tableau de cases
+     * @param cell la case que l'on souhaite affecter au tableau
+     * @param point l'endroit dans le tableau où l'on souhaite affecter la case
+     */
     public void setCell(Cell cell, Point point){
         tabCells[point.x][point.y] = cell;
     }
 
+    /**
+     * @return une chaine de caractères représantant l'état courant du jeu
+     */
     public String toString() {
         String boardTitle = "Board" + this.getClass().getName() + "\n"
                 + "\t" + "(" + getSize() + "," + getSize() + ")" + "\n";
 
         StringBuilder stringBuilder = new StringBuilder(boardTitle);
-        for (int i=0; i<getSize(); i++) {
+        for (int i = 0; i < getSize(); i++) {
             stringBuilder.append("  | ");
-            for (int j=0; j<getSize(); j++){
+            for (int j = 0; j < getSize(); j++) {
                 stringBuilder.append(tabCells[i][j] + " ");
             }
             stringBuilder.append("|" + "\n");
@@ -228,20 +379,41 @@ public class Game extends Observable {
         return stringBuilder.toString();
     }
 
-    public HashMap<Cell, Point> getCells(){
+    /**
+     * @return l'attribut hashMap qui contient les cellules du jeu
+     */
+    public HashMap<Cell, Point> getCells() {
         return this.cells;
     }
+
+    /**
+     * @return la taille du tableau de jeu, autrement dit, la dimension du jeu (ex: retourne 4 si le jeu est un 4x4)
+     */
     public int getSize() {
         return tabCells.length;
     }
 
+    /**
+     * @param i l'indice de la ligne du tableau
+     * @param j l'indice de la colonne du tableau
+     * @return la cellule stockée dans le tableau à l'indice (i, j)
+     */
     public Cell getCell(int i, int j) {
         return tabCells[i][j];
     }
 
+    /**
+     * Methode qui supprime le fichier data passé en attribut de la classe Game, et qui va implicitement écraser les données sauvegardées pour le meilleur temps et le meilleur score
+     */
     public void resetBestScore() {
         try {
-            data.delete();
+
+            if (data.delete()) {
+                System.out.println(data.getName() + " est supprimé.");
+            } else {
+                System.out.println("Opération de suppression echouée");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -311,6 +483,7 @@ public class Game extends Observable {
      */
     private synchronized void setTimeElapsed() {
         Instant instantStop = Instant.now();
+        //System.out.println(Duration.between(instantStart, instantStop).toMillis());
         timeElapsed = Duration.between(instantStart, instantStop).toMillis();
         setChanged();
         notifyObservers();
@@ -323,7 +496,9 @@ public class Game extends Observable {
         new Thread() {
             public synchronized void run() {
                 while (!isGameOver) {
+                    //System.out.println(gameOver);
                     setTimeElapsed();
+                    //System.out.println(activeCount());
 
                     try {
                         Thread.sleep(1);
@@ -372,8 +547,10 @@ public class Game extends Observable {
         int tabY = mouseX/PIXEL_PER_SQUARE;
         if (tabX<getSize() && tabY<getSize()) {
             if (unlock > 0 && !unlockRunning) {
+                System.out.println(unlock + ", " + unlockRunning);
                 unlockRunning = true;
                 unlockedPosition = new Point(tabX, tabY);
+                System.out.println(unlock + ", " + unlockRunning + ", " + tabCells[tabX][tabY].getValue() + ", " + unlockedPosition);
             }
         }
     }
@@ -406,6 +583,7 @@ public class Game extends Observable {
                     unlocked = getCell(unlockedPosition.x, unlockedPosition.y);
                     updateCell(getCell(tabX, tabY), new Point(unlockedPosition.x, unlockedPosition.y));
                     updateCell(unlocked, new Point(tabX, tabY));
+                    System.out.println(unlock + ", " + unlockRunning + ", " + tabCells[tabX][tabY].getValue());
                 }
             }
         }
@@ -414,11 +592,11 @@ public class Game extends Observable {
 
         if (this.getCells().keySet().size() == getSize() * getSize() ) {
             if (!isGameOver && !hasNextMove()) {
+                System.out.println("game is over");
                 isGameOver = true;
             }
             else if (isGameOver && hasNextMove()) {
                 isGameOver = false;
-                ThreadGetActualTime();
             }
         }
 
@@ -426,10 +604,10 @@ public class Game extends Observable {
         notifyObservers();
     }
 
+    /**
+     * @return le booléen isGameOver qui dit si la partie est perdue ou non
+     */
     public boolean isGameOver() {
         return isGameOver;
     }
-
-
-
 }
